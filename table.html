@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="js/myjslib.js"></script>
+<script src="js/jquery-1.8.3.min.js"></script>
+
+<title>jQuery插件使用案例</title>
+<style type="text/css">
+* {
+  padding: 0px;
+  margin:0px
+}
+body {
+  text-align: center
+}
+.wrap ul {
+  overflow: hidden
+}
+.wrap li {
+  float: left;
+  list-style: none;
+  margin-right: 10px;
+  cursor: pointer;
+  padding: 2px 5px
+}
+.link {
+  cursor: pointer;
+  color: #F00
+}
+.wrap {
+  width: 200px;
+  margin: 50px auto
+}
+.wrap, .ellipsis {
+  font-size: 12px;
+  width: 200px;
+}
+.tab_div div {
+  display: none;
+  padding: 10px;
+}
+.tab_div {
+  text-align: left;
+  border: 1px #CCC solid;
+  height: 200px;
+  clear: both
+}
+.cur {
+  background: #060;
+  color: #FFF
+}
+#setTab_2{
+  margin-top: 20px;
+}
+</style>
+<script type="text/javascript">
+function checkLeave(){
+  if(document.all)
+  {
+    window.event.returnValue = false;
+  }
+  else
+  {
+    event.preventDefault();
+  }
+}
+
+$(document).ready(function() {
+  //tab
+  $("#setTab").setTab();
+  $("#setTab_2").setTab();
+  $('.tab_div').myPlugin({
+    'color':'blue',
+    'fontSize':'20px',
+    'textDecoration':'underline'
+  });
+
+});
+/*
+*Jquery插件编写范例20170322
+*1)$.extend()扩展jQuery方法
+*2)$.fn向jQuery新增方法
+*3)$.widget应用jQuery UI的部件工厂方式创建
+*/
+/*.fn向jQuery新增方法*/
+;(function ($, window, document,undefined) {
+  $.fn.setTab = function () {
+    var getTab=$(this),//this指向调用函数的ID
+    panels = getTab.children("div.tab_div").children("div"),
+    tabs = getTab.find("li");
+
+    return this.each(function(){
+      $(tabs).click(function(e) {
+        var index = $.inArray(this, $(this).parent().find("li"));//this指向li
+        if (panels.eq(index)[0]) {
+          $(tabs).removeClass("cur");
+          $(this).addClass("cur");
+          panels.css("display", "none").eq(index).css("display", "block");
+        }
+      });
+
+    });
+  }
+
+  //定义Beautifier的构造函数
+  var Beautifier = function(ele, opt) {
+    this.$element = ele,
+    this.defaults = {
+      'color': 'red',
+      'fontSize': '12px',
+      'textDecoration': 'none'
+    },
+    this.options = $.extend({}, this.defaults, opt)
+  }
+  //定义Beautifier的方法
+  Beautifier.prototype = {
+    beautify: function() {
+      return this.$element.css({
+        'color': this.options.color,
+        'fontSize': this.options.fontSize,
+        'textDecoration': this.options.textDecoration
+      });
+    }
+  }
+  //在插件中使用Beautifier对象
+  $.fn.myPlugin = function(options) {
+    //创建Beautifier的实体
+    var beautifier = new Beautifier(this, options);
+    //调用其方法
+    return beautifier.beautify();
+  }
+})(jQuery, window, document);
+/*
+*在jQuery命名空间添加一个静态方法
+*调用:$.myfunction();
+*/
+$.extend({
+    sayHello: function(name) {
+      console.log('Hello,' + (name ? name : 'Dude') + '!');
+  }
+})
+
+$.sayHello('wawa'); //调用
+
+/*ChinaNet-开头*/
+var the_substring = "ChinaNet-fanfan".substring(0,9);
+if( the_substring != "ChinaNet-" )
+{
+  alert("error!");
+}
+console.log(the_substring);
+/*页面超时*/
+var eventID; 
+var currentMousePosition1;//记录鼠标坐标  
+var currentMousePosition2;   
+var timeout = 300*1000;  //设定超时时间  
+var currentSecond = 0; 
+function init()
+{
+  currentMousePosition1 = "";  
+  currentMousePosition2 = "";  
+  eventID = setInterval(CheckTime,1000);
+}
+function mousePos(e)
+{  
+   var x,y;  
+   var e = e||window.event;  
+   return {   
+     x:e.clientX,  
+       y:e.clientY
+   };  
+};  
+
+function GetXYPosition(e)
+{  
+  currentMousePosition2 = mousePos(e).x+','+mousePos(e).y;
+};  
+function CheckTime()
+{  
+    if(currentMousePosition1 == currentMousePosition2){  
+        currentSecond = currentSecond+1000;  
+        if(currentSecond>timeout){  
+            clearInterval(eventID);  
+            alert("您已超时，请重新登录！");
+            log_out();
+      //window.location.replace("/index.html");
+        }  
+    }  
+    else {  
+        currentSecond = 0;  
+        currentMousePosition1 = currentMousePosition2;  
+    }  
+}
+/*实验JS插件，参数传递与回调函数*/
+nc.minit({debug:true,lock:true},initMenu);
+
+function initMenu(){
+  console.log(nc);
+}
+
+var myarray = [1,2];
+
+var
+point = {
+
+    x : 10,
+
+    y : 5,
+
+    add: function(otherPoint) {
+
+        this.x += otherPoint.x;
+
+        this.y += otherPoint.y;
+
+    }
+
+};
+
+console.log(point);
+</script>
+</head>
+<body class="wrap" onload="init();">
+  <div id="setTab" onMouseMove="GetXYPosition(event)">
+    <ul class="tab_nav">
+      <li class="cur">国事</li>
+      <li>军情</li>
+      <li>图片</li>
+    </ul>
+    <div class="tab_div">
+      <div style="display: block">国事</div>
+      <div>军情</div>
+      <div>图片</div>
+    </div>
+  </div>
+  <div id="setTab_2">
+    <ul class="tab_nav">
+      <li>国事</li>
+      <li class="cur">军情</li>
+      <li>图片</li>
+    </ul>
+    <div class="tab_div">
+      <div>国事</div>
+      <div style="display: block">军情</div>
+      <div>图片</div>
+    </div>
+  </div>
+</body>
+</html>

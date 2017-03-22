@@ -1,0 +1,2098 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>宽带设置</title>
+	<meta http-equiv=Content-Language content=zh-cn>
+	<meta http-equiv=Content-Type content="text/html; charset=gb2312">
+	<script src="js/jquery-1.8.3.min.js"></script>
+	<script src="js/jquery.ajaxfileupload.js"></script>
+	<script src="js/util.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/cssreset-min.css">
+	<link rel="stylesheet" type="text/css" href="./css/main_ext.css">
+	<link rel="stylesheet" type="text/css" href="./css/main.css">
+
+	<style>
+		body{margin:0 auto;min-height:500px;width:505px;font-size:12px/18px Verdana;background-color: #FFFFF3;}
+		table{font-size:9pt; border:1px solid #F2F2F2;width:100%;margin:2px 0; text-align:left;}
+		table:link{border-color:#F2F2F2;}
+		/*table:hover{border-color:#00B2EE;}*/
+		table:active{}
+
+		tr td:first-child{width:160px;}
+		ul.ul_hack{display:inline-block;*display:inline;*zoom:1;}
+		li{height:auto;width:70px;}
+		#main{width:100%;text-align: center;}
+		.bindmode_select{background-color:#E0EEE0;}
+		.linkmode_select{background-color:#EEEED1;}
+		.ipversion_select{background-color:#EEE685;}
+		.bridge_select{background-color:#F0F8FF;}
+		.vlanmode_select{background-color:#EED5D2;}
+		.ppp_select{background-color:#BFEFFF;}
+		.ppp_route_bridge_select,
+		.dslite_select{border:1px solid #FF4500;}
+		.default_hidden{background-color:#8B8682;}
+	</style>
+	<script type="text/javascript" language="javascript">
+	/**************************************************************************/
+	//变量
+	var nEntryNum = "2";//"<% tcWebApi_get("WanInfo_Common","CycleNum","s") %>";
+	// num 0
+	var vArrayStr = "1_TR069_R_VID_46,2_INTERNET_R_VID_,";//"<% tcWebApi_get("WanInfo_Common","CycleValue","s") %>";
+	var vEntryName = vArrayStr.split(','); 
+	vArrayStr = "0,16,";// "<% tcWebApi_get("WanInfo_Common","ValidIFIndex","s") %>";
+	var vEntryIndex = vArrayStr.split(',');
+	var vCurrentDHCPv6 = "N/A";
+	var vBindStatus = "No,No,No,No,No,No,No,No,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1";
+	/****************************初始化****************************************/
+	function LoadFrame()
+	{
+		with (getElById('ConfigForm'))
+		{
+			Wan_Flag.value = "0";
+			var wanStatus = "N/A";
+			if((0 != parseInt(wanStatus)) && (wanStatus != "N/A"))
+			{
+				if(99 == parseInt(wanStatus))
+				{
+					alert(msg[5]);
+				}
+				else{
+					alert(msg[parseInt(wanStatus)]);
+				}
+				document.ConfigForm.submit();
+			}
+
+			oldIpVer = getRadioVal("IpVersion");
+			if ((CurWan.length-1) > 0)
+			{
+				WanModeChange();
+				if (serviceList.value == "TR069" || serviceList.value == "VOICE" || serviceList.value == "TR069_VOICE" )
+				{
+					dhcpv6pdflag.value = "No";
+					setDisplay('secBind',0);
+					setDisplay('secNat',0);
+					clearBindList();
+				}
+				else
+				{
+					var ipVer = getRadioVal("IpVersion");
+					setDisplay('secBind',1);
+					if((wanMode.value == "Bridge") || ("IPv6" == ipVer)) setDisplay('secNat',0);
+					else setDisplay('secNat',1);
+				}
+				if(linkMode.value == "linkPPP")
+					DialMethodChange();
+				VLANModeChg();
+				WanCurrIFIdx.value = getIFIdxvidDomain(getSelectVal('wanId'));
+			}
+			else
+			{
+				onChangeSvrList();
+				ServiceListLoad(0);
+			}
+			var isCYE8SFUSupported="N/A";
+			var wanuilimit="N/A";
+			if("Yes" == isCYE8SFUSupported && "1" != wanuilimit){
+				btnAddCnt.style.display="none";
+				btnRemoveCnt.style.display="none";
+			}
+
+			clearPPP(0);
+		}
+	//	LockTR69Node(1);
+	}
+
+	function setStyle()
+	{
+		if(document.getElementById("pppPassword").value==""){
+			document.getElementById("pppPassword").style.background="yellow";
+			document.getElementById("pppPassword").value="";
+			document.getElementById("pppPassword").type="password";
+		}
+			
+	}
+
+	function clearPPP(hit)
+	{
+		var isIE=!!window.ActiveXObject;
+		console.log(isIE); 
+		var pppUserName = document.getElementById("pppUserName").value;
+		var pppPassword = document.getElementById("pppPassword").value;
+		if(!isIE)
+		{
+
+			if(pppUserName=="" && pppPassword==""){
+				if(0==hit){
+					document.getElementById("pppPassword").type="text";
+					document.getElementById("pppUserName").value="";
+					document.getElementById("pppPassword").value="";
+				}
+				else
+				{
+					document.getElementById("pppPassword").type="password";
+				}
+
+			}
+		}
+	}
+
+	function LockTR69Node(isLock)
+	{
+		var serviceType = 'TR069';
+		var idx = 0;
+		var frm = document.ConfigForm;
+
+		if ( 1 == isLock )
+		{
+			
+			if ( serviceType.indexOf('TR069') >= 0 )
+
+			{
+				for ( idx = 0; idx < frm.elements.length; idx ++ )
+				{
+						if ( 'hidden' == frm.elements[idx].type
+						|| 'btnAddCnt' == frm.elements[idx].id
+						|| 'wanId' == frm.elements[idx].id 
+
+						)
+							continue;
+		
+						frm.elements[idx].disabled = true;			
+				}
+			//	setDisplay('btnOK', 0);
+			//	setDisplay('btnCancel', 0);
+			}
+		}
+		else
+		{
+			for ( idx = 0; idx < frm.elements.length; idx ++ )
+			{
+					if ( 'hidden' == frm.elements[idx].type )
+						continue;
+					frm.elements[idx].disabled = false;			
+			}
+			//	setDisplay('btnOK', 1);
+			//	setDisplay('btnCancel', 1);
+		}
+	}
+
+	function WanIndexConstruction(domain,WanName)
+	{
+		this.domain = domain;
+		this.WanName = WanName;
+	}
+	function CheckWansActives()
+	{
+		var	nCurTemp = 0;
+		var	vcurLinks = new Array(nEntryNum);
+
+		for(var i=0; i<nEntryNum; i++)
+		{	
+			vcurLinks[nCurTemp++] = new WanIndexConstruction(vEntryIndex[i], vEntryName[i]);
+		}
+		
+		var	vObjRet = new Array(nCurTemp+1);
+		for(var m=0; m<nCurTemp; m++)
+		{
+			vObjRet[m] = vcurLinks[m];
+		}
+		vObjRet[nCurTemp] = null;
+		return vObjRet;
+	}
+	var	CurWan = CheckWansActives();
+	var WanNameObjs;
+
+	function getIFIdxvidDomain(domain)
+	{
+		var i = 0;
+
+		for( i=0; i< WanNameObjs.length; i++)
+
+		{
+			if ( domain == WanNameObjs[i].IfaceDomain )
+				return WanNameObjs[i].IfaceIndex;
+		}
+
+		return 1;
+	}
+
+	function WriteWanNameSelected()
+	{
+		var WanIDNums = CurWan;
+		var nlength = WanIDNums.length-1;
+		var i = 0;
+		var isSel = 0;
+		var gotopts = 0;
+
+		if(nlength == 1) 
+			document.ConfigForm.curSetIndex.value = WanIDNums[0].domain;
+		
+		WanNameObjs = new Array(nlength)
+		for( i=0; i< nlength; i++)
+		{
+
+			WanNameObjs[i] = new WanNameObject(WanIDNums[i].domain, WanIDNums[i].WanName, IFIdxArray[i]);
+
+		}
+		WanNameObjs.sort(WanNameSort);
+		
+		with (getElById('wanId'))
+		{
+
+			for( i=0; i< WanNameObjs.length; i++)
+
+			{
+				var opt = new Option(WanNameObjs[i].IfaceName, WanNameObjs[i].IfaceDomain);
+				if ( document.ConfigForm.curSetIndex.value == WanNameObjs[i].IfaceDomain )
+				{
+					opt.selected = true
+					isSel = i;
+				}
+				options.add ( opt );
+				gotopts = 1;
+			}
+			if ( gotopts )
+			{
+
+				options[isSel].setAttribute('selected', 'true');
+
+			}
+		}
+	}
+
+
+	function WanNameObject(IFDomain, IFName, IFIdx)
+	{
+		this.IfaceDomain = IFDomain;
+		this.IfaceName = IFName;
+		this.IfaceIndex = IFIdx;
+	}
+
+	/**************************************************************************/
+	/************************PPP拨号方式***************************************/
+	var ppp_flag = 2;
+    var manual_flag = 2;
+    var vcurConnect = "N/A";//"<% tcWebApi_get("WanInfo_WanIF","CONNECTION","s") %>";
+    if(vcurConnect == "Connect_Keep_Alive")
+        ppp_flag = 0;
+    else if(vcurConnect == "Connect_Manually")
+        ppp_flag = 1;  
+    vcurConnect = "N/A";//"<% tcWebApi_get("WanInfo_WanIF","PPPManualStatus","s") %>";
+	if(vcurConnect == "connect")
+		manual_flag = 0;
+	else if((vcurConnect == "disconnect"))
+		manual_flag = 1;
+	// <% tcWebApi_constSet("WanInfo_Common", "CycleJump", "19") %>
+	// num 20
+	var CycleV = "1,2,";// "<% tcWebApi_get("WanInfo_Common","CycleValue","s") %>";
+	var IFIdxArray = CycleV.split(',');
+
+	//<% tcWebApi_constSet("WanInfo_Common", "CycleJump", "5") %>
+	// num 26
+	var CycleV = "No,No,";// "<% tcWebApi_get("WanInfo_Common","CycleValue","s") %>";
+	var PPPBiArray = CycleV.split(',');
+
+	var IFIdxStore = "2";//"<% tcWebApi_get("Wan_Common","LatestIFIdx","s") %>"
+    /*************************************************************************/
+	function AddOption(selItem,value,text,ifSelected)
+	{
+		var option = document.createElement("option");
+		option.innerHTML = text;
+		option.value = value;
+		option.selected = ifSelected;
+		selItem.appendChild(option);
+	}
+	/**********************************************************************/
+	/******************************WAN模式切换*****************************/
+	function WanModeSelect()
+	{
+		isNeedChange = 1;
+		WanModeChange();
+		linkModeSelect();
+		with (getElById('ConfigForm'))
+		{
+			if (serviceList.value == "OTHER" && wanMode.value == "Bridge")
+			{
+				cb_dhcprelay.checked = true;
+			}
+			else
+			{
+				cb_dhcprelay.checked = false;
+			}
+			if ( serviceList.value != "TR069"
+			&& serviceList.value != "VOICE"
+			&& serviceList.value != "TR069_VOICE"
+			&& 'Route' == wanMode.value )
+		    {
+		        nat.value = "Enable";
+		        setCheck('cb_nat', 1);
+		    }
+		}
+	}
+
+
+	function WanModeChange()
+	{
+		with (getElById('ConfigForm'))
+		{
+
+			console.log("WanModeChange:"+wanMode.value);
+		    if (wanMode.value == "Route")
+		    {
+		        ServiceListLoad(0);
+		        setDisplay('secIpMode',1);
+		        setDisplay('secRouteItems',1);
+		        setDisplay('divLink', 1);
+		        setDisplay('secDhcp',1);
+		        setDisplay('secStatic',1);
+		        setDisplay('secPppoe',1);
+		        setDisplay('secbridgeDhcprelay',0);
+		        setDisplay('secBridgeType',0);
+		    
+		        if (serviceList.value == "TR069" || serviceList.value == "VOICE" || serviceList.value == "TR069_VOICE")
+		        {
+		            setDisplay('secNat',0);
+		        }
+		        else
+		        {
+		            setDisplay('secNat',1);
+		        }
+		        setDisplay('secIgmp',1);
+		        IpModeChange();
+		//<%if tcWebApi_get("WebCustom_Entry","isCTPONC9Supported","h" ) = "Yes" then%>
+		      //  setDisplay('secCloneMAC', 1);
+		//<%end if%>
+		    }
+		    else if (wanMode.value == "Bridge")
+		   	{
+		        ServiceListLoad(1);
+		        setDisplay('secIpMode',0);
+		        setDisplay('secRouteItems',0);
+		        setDisplay('divLink', 0);
+		        setDisplay('secStaticItems',0);
+		        setDisplay('secPppoeItems',0);
+		        setDisplay('secDhcp',0);
+		        setDisplay('secStatic',0);
+		        setDisplay('secPppoe',0);
+		        setDisplay('secBridgeType',1);
+		        setDisplay('cb_dhcprelay',1);
+		        getElement('secbridgeDhcprelay').style.display = "";
+		        //setRadio("IpVersion", "IPv4");
+		        setDisplay('secNat',0);
+		        nat.value = "Disabled";
+		        setDisplay('secIgmp',0);
+		//<%if tcWebApi_get("WebCustom_Entry","isCTPONC9Supported","h" ) = "Yes" then%>
+		       // setDisplay('secCloneMAC', 0);
+		//<%end if%>
+		    }
+		    else if (wanMode.value == "multMode")
+		    {
+		        setDisplay('secIpMode',1);
+		        setDisplay('secRouteItems',1);
+		        setDisplay('secDhcp',0);
+		        setDisplay('secStatic',0);
+		        setDisplay('secPppoe',1);
+		        setDisplay('secbridgeDhcprelay',0);
+		        IpMode[2].checked = true;
+		        setDisplay('secNat',1);
+		        setDisplay('secIgmp',1);
+		        IpModeChange();
+		    }
+		    if (AddFlag == true)
+		    {
+		        if (serviceList.value == "OTHER" && wanMode.value == "Bridge")
+		        {
+		            cb_dhcprelay.checked = true;
+		        }
+		        else
+		        {
+		            cb_dhcprelay.checked = false;
+		        }
+		    }
+		    IpVersionChange();
+	        MTUDispChange();
+	        MultiVIDDispChange();
+		    dsliteShow();
+		    pdEnableShow();
+		    dhcpEnableShow();
+		    pppoeProxyShow();
+		}
+	}
+
+	var isWanModeChg = -1;
+	var isAddBtnClick = 0;
+	function ServiceListLoad(isBridge)
+	{
+	    var bridgeArray = new Array('INTERNET', 'OTHER');
+	    var i = 0;
+	    var status = 'INTERNET';//'<% tcWebApi_get("WanInfo_WanIF","ServiceList","s") %>';
+	    var isSel = 0;
+	  //  <% if tcwebApi_get("WanInfo_Common","NoGUIAccessLimit","h" ) = "1" then %>
+	  //  var routeArray = new Array('TR069', 'INTERNET', 'TR069_INTERNET'
+	   //                                         <% if tcwebApi_get("WebCustom_Entry","isCTPONNOVOIP","h") <> "Yes" then %>
+	   //                                         , 'VOICE', 'TR069_VOICE', 'VOICE_INTERNET', 'TR069_VOICE_INTERNET'
+	   //                                         <% end if %>
+	   //                                         , 'OTHER');
+	   // <% else %>
+	    var routeArray;
+	    if ( status.indexOf('TR069') >= 0 && 0 == isAddBtnClick )
+	        routeArray = new Array(status);
+	    else
+	        routeArray = new Array('INTERNET'
+	                                              //  <% if tcwebApi_get("WebCustom_Entry","isCTPONNOVOIP","h") <> "Yes" then %>
+	                                                 , 'VOICE', 'VOICE_INTERNET'
+	                                              //  <% end if %>
+	                                                 , 'OTHER');
+	   // <% end if %>
+
+	//<% if tcwebApi_get("WebCustom_Entry","isCYE8SFUSupported","h") = "Yes" then %>
+	/*
+	    with ( getElById('serviceListShow') )
+	    {
+	        options.length=0;
+	        if ( 1 == isBridge )
+	        {
+	            for( i=0; i< bridgeArray.length; i++)
+	            {
+	                var opt = new Option(bridgeArray[i], bridgeArray[i]);
+	                if ( status == opt.value )
+	                {
+	                    opt.selected = true;
+	                    isSel = i;
+	                }
+	                options.add ( opt );
+	            }
+	            options[isSel].setAttribute('selected', 'true');
+	        }
+	        else
+	        {
+	            for( i=0; i< routeArray.length; i++)
+	            {
+	                var opt = new Option(routeArray[i], routeArray[i]);
+	                if ( status == opt.value )
+	                {
+	                    opt.selected = true;
+	                    isSel = i;
+	                }
+	                options.add ( opt );
+	            }
+	            options[isSel].setAttribute('selected', 'true');
+	        }
+	    }
+	    */
+	//<% end if %>
+		with ( getElById('serviceList') )
+	    {
+	        options.length=0;
+
+	        if ( 1 == isBridge )
+	        {
+	            for( i=0; i< bridgeArray.length; i++)
+	            {
+	                var opt = new Option(bridgeArray[i], bridgeArray[i]);
+	                if ( status == opt.value )
+	                {
+	                    opt.selected = true;
+	                    isSel = i;
+	                }
+	                options.add ( opt );
+	            }
+	            options[isSel].setAttribute('selected', 'true');
+	        }
+	        else
+	        {
+	            for( i=0; i< routeArray.length; i++)
+	            {
+	                var opt = new Option(routeArray[i], routeArray[i]);
+	                if ( status == opt.value )
+	                {
+	                    opt.selected = true;
+	                    isSel = i;
+	                }
+	                options.add ( opt );
+	            }
+	            options[isSel].setAttribute('selected', 'true');
+	        }
+	        
+	        if ( -1 == isWanModeChg )
+	            isWanModeChg = isBridge;
+	        else
+	        {
+	            if ( isWanModeChg != isBridge )
+	            {
+	                isWanModeChg = isBridge;
+	                onSelectSvrList();
+	            }
+	        }
+	    }
+	}
+
+	function onSelectSvrList()
+	{
+	    pdDefaultSel = 1;
+	    enabledhcpSel = 1;
+	    onChangeSvrList();
+		with (getElById('ConfigForm'))
+		{
+		    if (serviceList.value == "OTHER" && wanMode.value == "Bridge")
+		    {
+		        cb_dhcprelay.checked = true;
+		    }
+		    else
+		    {
+		        cb_dhcprelay.checked = false;
+		    }
+		}
+	}
+
+	var changeflag = 1;
+	function onChangeSvrList()
+	{
+		with (getElById('ConfigForm'))
+		{
+		    if ((serviceList.value == 0) && (IpMode[2].checked == true) && (wanMode.value != "Bridge"))
+		    {
+		        changeflag = 0;
+		        secManualDial.style.display = "none";
+		        secIdleTime.style.display = "none";
+		    }
+		    else if((serviceList.value != 0) && (IpMode[2].checked == true) && (wanMode.value != "Bridge"))
+		    {
+		        if(changeflag == 0)
+		        {
+		            addOption(DialMethod,1,"有流量时自动连接");
+		            addOption(DialMethod,'Manual',"手动拨号");
+		            changeflag = 1;
+		        }
+		    }
+		    if (serviceList.value == "TR069"   || serviceList.value == "VOICE" || serviceList.value == "TR069_VOICE" )
+		    {
+		        dhcpv6pdflag.value = "No";
+		        cb_nat.checked = false;
+		        nat.value = "Disabled";
+		        setDisplay('secBind',0);
+		        setDisplay('secNat',0);
+		        clearBindList();
+		    }
+		    else
+		    {
+		        dhcpv6pdflag.value = "Yes";
+		        cb_nat.checked = true;
+		        nat.value = "Enable";
+		//<% if tcwebApi_get("WebCustom_Entry","isCYE8SFUSupported","h") = "Yes" then %>
+		 //       setDisplay('secBind',0);
+		//<% else %>
+		//<% if tcWebApi_get("WebCustom_Entry", "isCT1PORTSupported", "h") = "Yes"  then %>
+		 //           setDisplay('secBind',0);
+		//<% else %>
+		        setDisplay('secBind',1);
+		//<% end if %>
+		//<% end if %>
+		        if(wanMode.value == "Bridge")
+		        {
+		            setDisplay('secNat',0);
+		            nat.value = "Disabled";
+		        }
+		        else
+		        {
+		            setDisplay('secNat',1);
+		        }
+		    }
+		    if (AddFlag == true)
+		    {
+		        if (serviceList.value == "OTHER" && wanMode.value == "Bridge")
+		        {
+		            cb_dhcprelay.checked = true;
+		        }
+		        else
+		        {
+		            cb_dhcprelay.checked = false;
+		        }
+		    }
+		    IpVersionChange();
+		    MTUDispChange();
+		    MultiVIDDispChange();
+		    dsliteShow();
+		    pdEnableShow();
+		    dhcpEnableShow();
+		    pppoeProxyShow();
+		}
+	}
+
+	function WanIdChange()
+	{
+	    document.ConfigForm.Wan_Flag.value  = "2";
+	    document.ConfigForm.curSetIndex.value = getSelectVal('wanId');
+	 //   document.ConfigForm.submit();//for test
+	}
+	/*****************************************************************************/
+	/*********************************模式****************************************/
+	function MultiVIDDispChange()
+	{
+	    var svrList;
+
+	    with (getElById('ConfigForm'))
+	    {
+	        svrList = serviceList.value;
+	        if ( svrList.indexOf('INTERNET') >= 0 || svrList.indexOf('OTHER') >= 0 )
+	            setDisplay('mulvidsec', 1);
+	        else
+	            setDisplay('mulvidsec', 0);
+	    }
+	}
+
+	function cb_enblServiceChange()
+	{
+		if(document.ConfigForm.cb_enblService.checked)
+			document.ConfigForm.WanActive.value = "Yes";
+		else
+			document.ConfigForm.WanActive.value = "No";
+	}
+
+	/*******************************************************************************/
+	/********************************承载业务***************************************/
+	function clearBindList()
+	{
+		for (var i = 1; i <= 4; i++)
+		{
+			document.getElementById("secLan" + i).disabled = false;
+			document.getElementById("cb_bindlan" + i).checked = false;
+			document.getElementById("secWireless" + i).disabled = false;
+			document.getElementById("cb_bindwireless" + i).checked = false;
+		}
+	}
+	/*********************************************************************/
+	/**************************链接方式，IP协议版本*********************************/
+
+	var oldIpVer;
+	var SelWanIndex = -1;
+	var vCurrentDHCPv6 = "N/A";
+
+	function linkModeSelect()
+	{
+		with (getElById('ConfigForm'))
+		{
+			pdDefaultSel = 1;
+			isNeedChange = 1;
+			var ipVer = getRadioVal("IpVersion");
+			if (getSelectVal('linkMode') == 'linkIP')
+			{
+				if("IPv6" == ipVer)
+					WriteIPv6List(1);
+				else if("IPv4/IPv6" == ipVer)
+				{
+					if(IpMode[0].checked)
+						WriteIPv6List(0);
+					else if(IpMode[1].checked)
+						WriteIPv6List(2);
+					else
+						WriteIPv6List(0);
+				}
+				setDisplay("secDhcp", 1);
+				setDisplay('secStatic',1);
+				if (SelWanIndex != -1)
+				{
+				}
+				else
+				{
+					IpMode[0].checked = true;
+				}
+			}
+			else
+			{
+				if("IPv4" != ipVer)
+					WriteIPv6List(0);
+				setDisplay("secDhcp", 0);
+				setDisplay('secStatic',0);
+				IpMode[2].checked = true;
+				DialMethodChange();
+			}
+			setDisplay('secPppoe',0);
+			IpModeChange();
+			IpVersionChange();
+			MTUDispChange();
+			dsliteShow();
+			pdEnableShow();
+			dhcpEnableShow();
+			pppoeProxyShow();
+		}
+	}
+
+	function IpModeChange()
+	{
+		with (getElById('ConfigForm'))
+		{
+		    var ipVer = getRadioVal("IpVersion");
+			if (IpMode[0].checked == true)
+			{
+				setDisplay('secStaticItems',0);
+				setDisplay('secPppoeItems',0);
+				document.ConfigForm.ISPTypeValue.value = "0";
+			    if("IPv4/IPv6" == ipVer){
+			        if(getSelectVal('linkMode') == 'linkIP')
+			            WriteIPv6List(0);
+			    }
+			        
+			}
+			else if (IpMode[1].checked == true)
+			{
+				setDisplay('secStaticItems',1);
+				setDisplay('secPppoeItems',0);
+				document.ConfigForm.ISPTypeValue.value = "1";
+			    if("IPv4/IPv6" == ipVer){
+			        if(getSelectVal('linkMode') == 'linkIP')
+			            WriteIPv6List(2);
+			    }
+			}
+			else if (IpMode[2].checked == true)
+			{
+				setDisplay('secStaticItems',0);
+				setDisplay('secPppoeItems',1);
+				document.ConfigForm.ISPTypeValue.value = "2";
+			}
+			else if (IpMode[3].checked == true)
+			{
+				setDisplay('secStaticItems',0);
+				setDisplay('secPppoeItems',1);
+				document.ConfigForm.ISPTypeValue.value = "3";
+			}
+			else if (IpMode[4].checked == true)
+			{
+				setDisplay('secStaticItems',1);
+				setDisplay('secPppoeItems',0);
+				document.ConfigForm.ISPTypeValue.value = "4";
+			}
+		}
+	}
+
+	function pppbiShow()
+	{
+	    var mode;
+	    var linkMode;
+	    var svrList;
+
+	    mode = getSelectVal('wanMode');
+	    linkMode = getSelectVal('linkMode');
+	    svrList = getSelectVal('serviceList');
+
+	    if ( 'Route' == mode && 'linkPPP' == linkMode
+	       && (svrList.indexOf('INTERNET') >= 0 || svrList.indexOf('OTHER') >= 0) )
+	        setDisplay('ppp_bi', 1);
+	    else
+	        setDisplay('ppp_bi', 0);
+	}
+
+	var enabledhcpSel = 0;
+	function dhcpEnableShow()
+	{
+	//<%if TCWebApi_get("WebCustom_Entry","isCTDHCPPortFilterSupported","h" ) = "Yes" then%>
+	    var svrList;
+
+	    svrList = getSelectVal('serviceList');
+
+	    if ( 'TR069' == svrList
+	        || 'VOICE' == svrList
+	        || 'TR069_VOICE' == svrList )
+	    {
+	        setDisplay('enabledhcpsec', 0);
+	        setCheck('cb_enabledhcp', 0);
+	    }
+	    else
+	    {
+	        setDisplay('enabledhcpsec', 1);
+	        if ( 1 == enabledhcpSel )
+	        {
+	            enabledhcpSel = 0;
+	            if ( svrList.indexOf('OTHER') >= 0 )
+	                setCheck('cb_enabledhcp', 0);
+	            else
+	                setCheck('cb_enabledhcp', 1);
+	        }
+	    }
+	//<%else%>
+	//    setDisplay('enabledhcpsec', 0);
+	//    setCheck('cb_enabledhcp', 0);
+	//<%end if%>
+	}
+
+	function pppoeProxyShow()
+	{
+	//<%if TCWebApi_get("WebCustom_Entry","isPPPoEProxySupported","h" ) = "Yes" then%>
+	/*
+	    var mode;
+	    var linkMode;
+	    var svrList;
+
+	    mode = getSelectVal('wanMode');
+	    linkMode = getSelectVal('linkMode');
+	    svrList = getSelectVal('serviceList');
+
+	    if ( 'Route' == mode && 'linkPPP' == linkMode
+	       && (svrList.indexOf('INTERNET') >= 0 || svrList.indexOf('OTHER') >= 0) )
+	    {
+	        setDisplay('ppp_proxy_bi', 1);
+	        ppp_proxy_bi_Change();
+	    }
+	    else
+	    {
+	        setDisplay('ppp_proxy_bi', 0);
+	        setDisplay('ppp_proxy_user', 0);
+	    }
+	//<%else%>
+	*/
+	    pppbiShow();
+	//<%end if%>
+	}
+
+	function DialMethodChange()
+	{
+	    var cntMode = getSelectVal('DialMethod');
+	    if (cntMode == 'AlwaysOn')
+	    {
+	        setDisplay('secIdleTime',0);
+	        setDisplay('secManualDial',0);
+	        setText('ConnectionFlag', "Connect_Keep_Alive");
+	    }
+	    else if (cntMode == 'Manual')
+	    {
+	        setDisplay('secIdleTime',0);
+	        setDisplay('secManualDial',1);
+	        setText('ConnectionFlag', "Connect_Manually");
+	        if(0 == ppp_flag){
+	            setDisable('pppDialButton',1);
+	            setText('pppDialButton', '手动拨号');
+	        }
+	        else if(1 == ppp_flag){
+	            if(0 == manual_flag){
+	                setDisable('pppDialButton',0);
+	                setText('pppDialButton', '断开连接');
+	                setText('pppManualStatus_Flag', 'disconnect');
+	            }
+	            else{
+	                setDisable('pppDialButton',0);
+	                setText('pppDialButton', '手动拨号');
+	                setText('pppManualStatus_Flag', 'connect');
+	            }   
+	        }
+	        else
+	        {
+	            setDisable('pppDialButton',1);
+	            setText('pppDialButton', '手动拨号');
+	        }
+	    }
+	    else{
+	        setDisplay('secIdleTime',0);
+	        setDisplay('secManualDial',0);
+	        setText('ConnectionFlag', "Connect_on_Demand");
+	    }
+	}
+	function IpVersionChange()
+	{
+	    with (getElById('ConfigForm'))
+	    {
+	        var ipVer = getRadioVal("IpVersion");
+	        var ConnType = getSelectVal('wanMode');
+	        var Serverlist = getSelectVal('serviceList');
+	        if (ConnType != 'Route')
+	        {
+	            setDisplay('divIpVersion', 1);
+	            setDisplay('secIPv6Div', 0);
+	            return;
+	        }
+	        setDisplay('divIpVersion', 1);
+	        setDisplay('secIPv6Div', 1);
+	        if ("IPv4" == ipVer)
+	        {
+	            if (Serverlist == "TR069"  || Serverlist == "VOICE" || Serverlist == "TR069_VOICE" )
+	            {
+	                setDisplay('secNat', 0);
+	                nat.value = "Disabled";
+	            }
+	            else
+	            {
+	                setDisplay('secNat', 1);
+	                if ( oldIpVer != ipVer )
+	                {
+	                    nat.value = "Enable";
+	                    setCheck('cb_nat', 1);
+	                }
+	            }
+	            if ('linkIP' == getSelectVal('linkMode'))
+	             {
+	                setDisplay('secDhcp', 1);
+	                setDisplay('secStatic', 1);
+	                setDisplay('secPppoeItems', 0);
+	                if (SelWanIndex != -1)
+	                {
+	                    if ((Wan[SelWanIndex].addrType == 'DHCP') || (Wan[SelWanIndex].wanConn == "PPPCon"))
+	                    {
+	                        IpMode[0].checked = true;
+	                    }
+	                    else
+	                    {
+	                        IpMode[1].checked = true;
+	                    }
+	                }
+	            }
+	            else
+	            {
+	                setDisplay('secDhcp', 0);
+	                setDisplay('secStatic', 0);
+	                setDisplay('secPppoeItems', 1);
+	            }
+	            setDisplay('secPppoe', 0);
+	            setDisplay('secPppoa', 0);
+	            setDisplay('secIpoa', 0);
+	            if(IpMode[1].checked && ("linkIP" == getSelectVal('linkMode')))
+	            {
+	                setDisplay('secStaticItems', 1);
+	            }
+	            else
+	            {
+	                setDisplay('secStaticItems', 0);
+	            }
+	            setDisplay('TrIpv6AddrType', 0);
+	            setDisplay('TrIpv6Addr', 0);
+	            setDisplay('TrIpv6Dns1', 0);
+	            setDisplay('TrIpv6Dns2', 0);
+	            setDisplay('TrIpv6Gateway', 0);
+	            setDisplay('TrIpv6GatewayInfo', 0);
+	        }
+	        else if ("IPv6" == ipVer)
+	        {
+	            setDisplay('secNat', 0);
+	            nat.value = "Disabled";
+	            setDisplay('secDhcp', 0);
+	            setDisplay('secStatic', 0);
+	            setDisplay('secPppoe', 0);
+	            setDisplay('secPppoa', 0);
+	            setDisplay('secIpoa', 0);
+	            setDisplay('secStaticItems', 0);
+	            setDisplay('TrIpv6AddrType', 1);
+	            var linkstr = getSelectVal('linkMode');
+	            if(linkstr == "linkIP")
+	                WriteIPv6List(1);
+	            else
+	                WriteIPv6List(0);
+	        }
+	        else
+	        {
+	            if (Serverlist == "TR069"  || Serverlist == "VOICE" || Serverlist == "TR069_VOICE")
+	            {
+	                setDisplay('secNat', 0);
+	                nat.value = "Disabled";
+	            }
+	            else
+	            {
+	                setDisplay('secNat', 1);
+	                if ( oldIpVer != ipVer )
+	                {
+	                    nat.value = "Enable";
+	                    setCheck('cb_nat', 1);
+	                }
+	            }
+	            if ('linkIP' == getSelectVal('linkMode'))
+	            {
+	                setDisplay('secDhcp', 1);
+	                setDisplay('secStatic', 1);
+	                setDisplay('secPppoeItems', 0);
+	                if (SelWanIndex != -1)
+	                {
+	                    if ((Wan[SelWanIndex].addrType == 'DHCP') || (Wan[SelWanIndex].wanConn == "PPPCon"))
+	                    {
+	                        IpMode[0].checked = true;
+	                    }
+	                    else
+	                    {
+	                        IpMode[1].checked = true;
+	                    }
+	                }
+	            }
+	            else
+	            {
+	                setDisplay('secDhcp', 0);
+	                setDisplay('secStatic', 0);
+	                setDisplay('secPppoeItems', 1);
+	            }
+	                setDisplay('secPppoe', 0);
+	                setDisplay('secPppoa', 0);
+	                setDisplay('secIpoa', 0);
+	                if (('linkIP' == getSelectVal('linkMode')) && IpMode[1].checked)
+	                {
+	                    setDisplay('secStaticItems', 1);
+	                }
+	                else
+	                {
+	                    setDisplay('secStaticItems', 0);
+	                }
+	                setDisplay('TrIpv6AddrType', 1);
+	                if('linkIP' == getSelectVal('linkMode'))
+	                {
+	                    if(IpMode[0].checked)
+	                    {
+	                        WriteIPv6List(0);
+	                    }
+	                    else if(IpMode[1].checked)
+	                        WriteIPv6List(2);
+	                    else
+	                        WriteIPv6List(0);
+	                }
+	                else
+	                    WriteIPv6List(0);
+	            }
+	            oldIpVer = ipVer;
+	            
+	            dsliteShow();
+	            pdEnableShow();
+	    }
+	}
+
+	function WriteIPv6List(index)
+	{
+	    var vmode = new Array("No", "Yes", "N/A");
+	    var ctrl = getElById('IdIpv6AddrType');
+	    for(var i=0; i<ctrl.options.length;)
+	    {
+	        ctrl.removeChild(ctrl.options[i]);
+	    }
+	    if(index == 0)
+	    {
+	        var aMenu = new Array("SLAAC","DHCP");
+	        for(i=0; i<aMenu.length; i++)
+	        {
+	            ctrl.options.add(new Option(aMenu[i],aMenu[i]));
+	            if(vCurrentDHCPv6 == vmode[i])
+	            {
+	                document.ConfigForm.IdIpv6AddrType.selectedIndex = i;
+	            }
+	        }
+	    }
+	    else if(index == 1)
+	    {
+	        var aMenu = new Array("SLAAC","DHCP","Static");
+	        for(i=0; i<aMenu.length; i++)
+	        {
+	            ctrl.options.add(new Option(aMenu[i],aMenu[i]));
+	            if(vCurrentDHCPv6 == vmode[i])
+	            {
+	                document.ConfigForm.IdIpv6AddrType.selectedIndex = i;
+	            }
+	        }
+	    }
+	    else if(index == 2)
+	    {
+	        var aMenu = "Static";
+	        ctrl.options.add(new Option(aMenu,aMenu));
+	    }
+	    OnIPv6Changed();
+	}
+
+	/*******************************************************************/
+	/**********************使能NAT**************************************/
+	function EnableNatClick()
+	{
+		if(document.ConfigForm.cb_nat.checked)
+			document.ConfigForm.nat.value = "Enable";
+		else
+			document.ConfigForm.nat.value = "Disabled";
+	}
+
+	/********************************************************************/
+	/*********************IPV6 *******************************************/
+	var AddFlag = false;
+	var isNeedChange = 0;
+	function MTUDispChange()
+	{
+	    var mtudescrip = new Array('MTU[128-1492]：', 'MTU[576-1500]：', 'MTU[1280-1492]：', 'MTU[1280-1500]：','MTU[1320-1492]：','MTU[1320-1500]：');
+	    with (getElById('ConfigForm'))
+	    {
+	        if ( 'Route' == wanMode.value )
+	        {
+	            setDisplay('MTUsec', 1);
+	            if (AddFlag == true || isNeedChange)
+	            {
+	                isNeedChange = false;
+	                if (getSelectVal('linkMode') == 'linkPPP')
+	                    MTU.value = 1492;
+	                else
+	                    MTU.value = 1500;
+	            }
+
+	            if (getSelectVal('linkMode') == 'linkPPP')
+	            {
+	                if ('IPv4' == getRadioVal('IpVersion'))
+	                    getElement("MIUDescrip").innerHTML = mtudescrip[0];
+	                else{
+	                    if (getCheckVal('cb_enabledslite') == 1){
+	                        getElement("MIUDescrip").innerHTML = mtudescrip[4]; 
+	                    }else{
+	                    	getElement("MIUDescrip").innerHTML = mtudescrip[2];
+	            		}
+	                }
+	            }
+	            else
+	            {
+	                if ('IPv4' == getRadioVal('IpVersion'))         
+	                    getElement("MIUDescrip").innerHTML = mtudescrip[1];
+	                else{
+	                    if (getCheckVal('cb_enabledslite') == 1){
+	                        getElement("MIUDescrip").innerHTML = mtudescrip[5]; 
+	                    }else{
+	                    	getElement("MIUDescrip").innerHTML = mtudescrip[3];     
+	            		}
+	                }
+	            }
+	        }
+	        else
+	        {
+	            setDisplay('MTUsec', 0);
+	        }
+	    }
+	}
+
+	function cb_enabledsliteChange()
+	{
+	    with (getElById('ConfigForm'))
+	    {
+	        if ( 1 == getCheckVal('cb_enabledslite') )
+	        {
+	            setDisplay('dslite_2', 1);
+	            dslitemodeChange();
+	        }
+	        else
+	        {
+	            setDisplay('dslite_2', 0);
+	            setDisplay('dslite_3', 0);
+	        }
+	    }
+	    MTUDispChange();
+	}
+	//dslite
+	function dsliteShow()
+	{
+	    var ipVer;
+	    var svrList;
+	    var mode;
+	    var addrType;
+
+	    ipVer = getRadioVal('IpVersion');
+	    svrList = getSelectVal('serviceList');
+	    mode = getSelectVal('wanMode');
+
+	    if ( 'Route' == mode && 
+	        'IPv4' != ipVer && svrList.indexOf('INTERNET') >= 0)
+	    {
+	        setDisplay('dslite_1', 1);
+	        var modeObj = document.getElementsByName('dslitemode');
+	        if ( modeObj.length >= 2 )
+	        {
+	            modeObj[0].disabled = false;
+	            modeObj[1].disabled = false;
+	        }
+	        addrType = getSelectVal('IdIpv6AddrType');
+	        if ( 'Static' == addrType )
+	        {
+	            if ( modeObj.length >= 2 )
+	            {
+	                modeObj[0].disabled = true;
+	                modeObj[1].checked = true;
+	            }
+	        }
+	        cb_enabledsliteChange();
+	    }
+	    else
+	    {
+	        setDisplay('dslite_1', 0);
+	        setDisplay('dslite_2', 0);
+	        setDisplay('dslite_3', 0);
+	    }
+	}
+
+
+	var pdDefaultSel = 0;
+	function pdEnableShow()
+	{
+	    var ipVer;
+	    var mode;
+	    var svrList;
+
+	    ipVer = getRadioVal('IpVersion');
+	    mode = getSelectVal('wanMode');
+	    svrList = getSelectVal('serviceList');
+	    addrType = getSelectVal('IdIpv6AddrType');
+	    if ( 'Route' == mode && 'IPv4' != ipVer
+	        && (svrList.indexOf('INTERNET') >= 0 || svrList.indexOf('OTHER') >= 0) )
+	    {
+	        setDisplay('PDEnableSec', 1);
+	        if ( svrList.indexOf('INTERNET') >= 0 && 1 == pdDefaultSel )
+	            setCheck('cb_enabledpd', 1);
+	        pdDefaultSel = 0;
+	        pdModeShow( getCheckVal('cb_enabledpd') );
+	    }
+	    else
+	    {
+	        setDisplay('PDEnableSec', 0);
+	        pdModeShow(0);
+	    }
+	}
+
+	function pdmodeChange()
+	{
+	    var pdmode_sel;
+
+	    pdmode_sel = getRadioVal('pdmode');
+	    if ( 'No' == pdmode_sel )
+	        pdStaticCfgShow(1);
+	    else
+	        pdStaticCfgShow(0);
+	}
+
+	function pdModeShow( show )
+	{
+	    addrType = getSelectVal('IdIpv6AddrType');
+
+	    if ( 1 == show )
+	    {
+	        setDisplay('pdmode_1', 1);
+	        var modeObj = document.getElementsByName('pdmode');
+	        if ( modeObj.length >= 2 )
+	        {
+	            modeObj[0].disabled = false;
+	            modeObj[1].disabled = false;
+	        }
+
+	        if ( 'Static' == addrType )
+	        {
+	            if ( modeObj.length >= 2 )
+	            {
+	                modeObj[0].disabled = true;
+	                modeObj[1].checked = true;
+	            }
+	        }
+
+	        pdmodeChange();
+	    }
+	    else
+	    {
+	        setDisplay('pdmode_1', 0);
+	        pdStaticCfgShow(0);
+	    }
+	}
+
+	function pdStaticCfgShow( show )
+	{
+	    setDisplay('pdmode_2', show);
+	    setDisplay('pdmode_3', show);
+	    setDisplay('pdmode_4', show);
+	}
+
+	function dslitemodeChange()
+	{
+	    var mode;
+
+	    with (getElById('ConfigForm'))
+	    {
+	        mode = getRadioVal("dslitemode");
+	        switch (mode)
+	        {
+	            case '1':
+	                setDisplay('dslite_3', 1);
+	                break;
+	            default:
+	                setDisplay('dslite_3', 0);
+	                break;  
+	        }
+	    }
+	}
+
+	function cb_pdEnableChange()
+	{
+        var pdEnable = getCheckVal('cb_enabledpd');
+        pdModeShow(pdEnable);
+	}
+	//IPv6 WAN连接信息设置
+	function OnIPv6Changed()
+	{
+		with (getElById('ConfigForm'))
+		{
+		    var linkstr = getSelectVal('linkMode');
+		    var AddrType = getSelectVal('IdIpv6AddrType');
+		    if (AddrType == 'SLAAC')
+		    {
+                setDisplay('TrIpv6Addr', 0);
+                setDisplay('TrIpv6Dns1', 0);
+                setDisplay('TrIpv6Dns2', 0);
+                setDisplay('TrIpv6GatewayInfo', 0);
+                setDisplay('TrIpv6Gateway', 0);
+                ISPTypeValue.value = "0";
+		    }
+		    else if (AddrType == 'DHCP')
+		    {
+                setDisplay('TrIpv6Addr', 0);
+                setDisplay('TrIpv6Dns1', 0);
+                setDisplay('TrIpv6Dns2', 0);
+                setDisplay('TrIpv6Gateway', 1);
+                setDisplay('TrIpv6GatewayInfo', 1);
+                ISPTypeValue.value = "0";
+		    }
+		    else if (AddrType == 'Static')
+		    {
+                setDisplay('TrIpv6Addr', 1);
+                setDisplay('TrIpv6Dns1', 1);
+                setDisplay('TrIpv6Dns2', 1);
+                setDisplay('TrIpv6Gateway', 1);
+                setDisplay('TrIpv6GatewayInfo', 1);
+                ISPTypeValue.value = "1";
+		    }
+		    dsliteShow();
+		    pdEnableShow();
+		}
+	}
+	/*********************************************************************/
+	/********************VLAN模式*****************************************/
+	function VLANModeChg()
+	{
+	    with (getElById('ConfigForm'))
+	    {
+	        switch (VLANMode.value)
+	        {
+	            case 'TAG':
+	                setDisplay('vlansec', 1);
+	                setDisplay('priosec', 1);
+	                vlanId.value = "Yes";
+	                vlanPri.value = "Yes";
+	            if ( 0 == v8021P.value.length )
+	                v8021P.value = '0';
+	            break;
+
+	            case 'UNTAG':
+	            case 'TRANSPARENT':
+	                setDisplay('vlansec', 0);
+	                setDisplay('priosec', 0);
+	                vlanId.value = "No";
+	                vlanPri.value = "No";
+	            break;
+
+	            default:
+	            break;
+	        }
+	    }
+	}
+	/*********************************************************************/
+	/**************************创建WAN连接********************************/
+	function btnAddWanCnt()
+	{
+
+
+		LockTR69Node(0);
+
+		AddFlag = true;
+		resetText();
+
+	  	with (getElById('ConfigForm'))
+	    {
+	        AddOption(getElementByName('wanId'),-1,'新建WAN连接',true);
+	        btnAddCnt.disabled = true;
+	     
+	        setSelect('linkMode', 'linkPPP');  //链接模式 
+	        isAddBtnClick = 1;
+	        ServiceListLoad(1);
+	        setSelect('serviceList','INTERNET');//承载业务
+	        setText('ConnectionFlag', "Connect_Keep_Alive");
+	        setCheck('cb_enblService',1);        //模式启用
+	        setSelect('wanMode',"Route");        //模式
+	        setSelect('bridgeMode', "PPPoE_Bridged"); //桥类型
+	        lockObj('pppUserName',false);             //PPPoE账号设置
+	        lockObj('pppPassword',false);
+	        lockObj('vlan',false);                    //VLAN
+	        SelWanIndex = -1;
+	        enabledhcpSel = 1;
+	        WanModeChange();                          //WAN模式改变            
+	        onChangeSvrList();                         //服务列表
+	        IpMode[2].checked = true;                 //IP协议版本
+	        IpModeChange();                           //IP模式改变
+	        VLANModeChg();                            //VLAN模式改变
+	        for (var i = 0; i < 4; i++)                //绑定选项
+	        {
+	            var checkString = 'cb_bindlan' + (i+1);
+	            setCheck(checkString,0);
+	            checkString = 'cb_bindwireless' + (i+1);
+	            setCheck(checkString,0);
+	        }
+	        setRadio('pdmode', 'Yes');
+	     //   setText('wanhwaddress', '00:00:00:00:00:00');
+	     //   document.getElementById("table8").focus();
+	     
+	    }
+
+	}
+
+	function resetText()
+	{
+		var Inputs = document.getElementsByTagName("input");
+		for (var i = 0; i < Inputs.length; i++)
+		{
+			if (Inputs[i].type == "text" || Inputs[i].type == "password" )
+			{
+				Inputs[i].value = '';
+			}
+		}
+	}
+
+	function lockObj(objName, readST)
+	{
+	    if ( null != getElById(objName) )
+	    {
+	        getElById(objName).readOnly = readST;
+	        getElById(objName).style.color = readST ? 'gray' : '';
+	    }
+	}
+	var UsernameOpenFlag = "1";
+	var PasswordOpenFlag = "1";
+	var VLANIDOpenFlag = "1";
+	if(UsernameOpenFlag == "0")
+		lockObj('pppUserName', true);
+	if(PasswordOpenFlag == "0")
+		lockObj('pppPassword', true);
+	if(VLANIDOpenFlag == "0")
+		lockObj('vlan', true);
+
+	/***************************************************************************/
+	$(document).ready(function(){
+  		$("#get_html").click(function(){
+  			window.parent.location.href='index.html';
+		});
+
+	});
+	</script>
+</head>	
+	<body onload="LoadFrame();" style="width:505px;margin:0 auto;">
+		<div id="main">
+			<div id="content">
+				<!--新建WAN连接-->
+				<div id="wan-create" style="padding:10px">
+					<form name="ConfigForm" action="">
+						<input type="hidden" name="ConnectionFlag" value="N/A">
+						<input type="hidden" name="dhcpv6pdflag" value="Yes">
+						<input type="hidden" name="Wan_Flag" value="0">
+						<table class="selected_bg">
+							<tr>
+								<td>连接名称:</td>
+								  <input type="hidden" name="curSetIndex" value="1">
+                                  <input type="hidden" name="WanActive" value="Yes">
+                                  <input type="hidden" name="WanCurrIFIdx" value='1'>
+								<td width="300px">
+									<label>
+										<select onchange="WanIdChange()" name="wanId" id="wanId">
+											<!--
+											<option value="16" selected="true">1_TR069_VOICE_R_VID_20</option>
+											<option value="24">2_INTERNET_R_VID_36</option>
+											<option value="32">3_OTHER_B_VID_888</option>
+										-->
+			                            </select>
+		                        	</label>
+		                        	<script language=JavaScript type=text/javascript>
+									  	WriteWanNameSelected();
+									</script>
+
+								</td>
+				
+									<input type="hidden" name="EnCAPFlag" value="PPPoE">
+									<input type="hidden" name="PPPGetIpFlag" value="Dynamic">
+
+									<input type="hidden" name="Enable_Flag" value="Yes">
+									<input type="hidden" name="Disable_Flag" value="No">
+									<input type="hidden" name="afterdeleteFlag" value="0">
+									<input type="hidden" name="OperatorStyle" value="Add">
+
+									<input type="hidden" name="pppManualStatus_Flag" value="N/A">
+								<td>
+									<input id="btnAddCnt" onclick="btnAddWanCnt()" type="button" value="新建">
+								</td>
+							</tr>
+						</table>
+						<table class="selected_bg">
+							<tr>
+								<td>模式:</td>
+								<td width="200px">
+									<label>
+										<select  id="select2" onChange="WanModeSelect()" name="wanMode">
+											<option value="Route">Route</option>
+											<option value="Bridge">Bridge</option>
+			                            </select>
+		                        	</label>
+								</td>
+								<td>
+									<label>启用：
+										<input id="cb_enblService" onclick="cb_enblServiceChange()" type="checkbox"name="cb_enblService" checked/>
+										<input id="enblService" type="hidden" name="enblService">
+									</label>
+								</td>
+							</tr>
+						</table>
+						<table class="selected_bg">
+							<tr>
+								<td>承载业务:</td>
+								<td>
+									<label>
+										<select  id="serviceList" onchange="onSelectSvrList()" name="serviceList">
+											<option value="INTERNET" selected="true">INTERNET</option>
+											<option value="VOICE">VOICE</option>
+											<option value="VOICE_INTERNET">VOICE_INTERNET</option>
+											<option value="OTHER">OTHER</option>
+			                            </select>
+		                        	</label>
+								</td>
+							</tr>
+						</table>
+						<div id="secBind" class="bindmode_select">
+						<table>
+							<tr>
+								<td>绑定选项:</td>
+								<td>
+									<ul class="ul_hack">
+										<li id="secLan1">
+											<input id="cb_bindlan1" name="cb_bindlan1" type="checkbox" >LAN1
+											<input id="bindlan1" type="hidden" value="0" name="bindlan1">
+										</li>
+										<li id="secLan2">
+											<input id="cb_bindlan2" name="cb_bindlan2" type="checkbox" >LAN2
+											<input id="bindlan2" type="hidden" value="0" name="bindlan2">
+										</li>
+										<li id="secLan3">
+											<input id="cb_bindlan3" name="cb_bindlan3" type="checkbox" >LAN3
+											<input id="bindlan3" type="hidden" value="0" name="bindlan3">
+										</li>
+										<li id="secLan4">
+											<input id="cb_bindlan4" name="cb_bindlan4" type="checkbox" >LAN4
+											<input id="bindlan4" type="hidden" value="0" name="bindlan4">
+										</li>
+									</ul>
+									<br/>
+									<ul class="ul_hack">
+										<li id="secWireless1">
+											<input id="cb_bindwireless1"  type="checkbox" name="cb_bindwireless1">SSID1
+                        					<input id="bindwireless1" type="hidden" value="0" name="bindwireless1">
+										</li>
+										<li id="secWireless2">
+											<input id="cb_bindwireless2"  type="checkbox" name="cb_bindwireless2">SSID2
+                        					<input id="bindwireless2" type="hidden" value="0" name="bindwireless2">
+										</li>
+										<li id="secWireless3">
+											<input id="cb_bindwireless3"  type="checkbox" name="cb_bindwireless3">SSID3
+                        					<input id="bindwireless3" type="hidden" value="0" name="bindwireless3">
+										</li>
+										<li id="secWireless4">
+											<input id="cb_bindwireless4"  type="checkbox" name="cb_bindwireless4">SSID4
+                        					<input id="bindwireless4" type="hidden" value="0" name="bindwireless4">
+										</li>
+									</ul>
+								</td>
+							</tr>
+						</table>
+						</div>
+						<table id="enabledhcpsec" class="bindmode_select">
+							<tr>
+								<td>DHCP Server启用：</td>
+								<td>
+                                    <input id="cb_enabledhcp" type="checkbox" name="cb_enabledhcp" checked>
+                                    <input id="enable_dhcp" type=hidden name="enable_dhcp">
+								</td>
+								<script language="JavaScript" type="text/JavaScript">
+									var validSSID = "1";
+									if(validSSID == "1"){
+										setDisplay('secWireless1', 1);
+										setDisplay('secWireless2', 0);
+										setDisplay('secWireless3', 0);
+										setDisplay('secWireless4', 0);
+									}
+									else if(validSSID == "2"){
+										setDisplay('secWireless1', 1);
+										setDisplay('secWireless2', 1);
+										setDisplay('secWireless3', 0);
+										setDisplay('secWireless4', 0);
+									}
+									else if(validSSID == "3"){
+										setDisplay('secWireless1', 1);
+										setDisplay('secWireless2', 1);
+										setDisplay('secWireless3', 1);
+										setDisplay('secWireless4', 0);
+									}
+									else if(validSSID == "4"){
+										setDisplay('secWireless1', 1);
+										setDisplay('secWireless2', 1);
+										setDisplay('secWireless3', 1);
+										setDisplay('secWireless4', 1);
+									}
+									setDisplay('secLan4', 0);
+								  </script>
+							</tr>
+						</table>
+						<table  id="divLink" class="linkmode_select">
+							<tr>
+								<td>链接方式：</td>
+								<td>
+									<select  id="linkMode" onchange="linkModeSelect()" name="linkMode">
+										<option value="linkIP" selected>通过IP方式建立链接</option>
+										<option value="linkPPP">通过PPP方式建立链接</option>
+		                            </select>
+								</td>
+							</tr>
+							<tr id="divIpVersion" class="ipversion_select">
+								<td>IP协议版本:</td>
+								<td>
+									<ul>
+										<li>
+											<input id="IpVersion" onclick="pdDefaultSel=1;IpVersionChange();MTUDispChange();" type=radio value="IPv4" name="IpVersion" checked>IPv4
+										</li>
+										<li>
+											<input id="IpVersion" onclick="pdDefaultSel=1;IpVersionChange();MTUDispChange();" type=radio value="IPv6" name="IpVersion">IPv6
+										</li>
+										<li> 
+											<input id="IpVersion" onclick="pdDefaultSel=1;IpVersionChange();MTUDispChange();" type=radio value="IPv4/IPv6" name="IpVersion">IPv4/IPv6
+										</li>
+									</ul>
+								</td>
+							</tr>
+						</table>
+					    <input type="hidden" name="IPVersionValue" value="IPv4/IPv6">
+                      	<input type="hidden" name="ISPTypeValue" value="0">
+                      	<div id="secIpMode" class="linkmode_select">
+						<table id="secDhcp">
+							<tr>
+								<td><INPUT onclick="IpModeChange()" type=radio value="DHCP" name="IpMode" checked> DHCP</td>
+								<td>从ISP处自动得到一个IP地址.</td>
+							</tr>
+						</table>
+						<table id="secStatic">
+							<tr>
+								<td><INPUT onclick="IpModeChange()" type=radio value="Static" name="IpMode" > Static</td>
+								<td>经ISP配置一个静态的IP给你.</td>
+							</tr>
+						</table>
+						<table id="secPppoe" class="hidden">
+							<tr>
+								<td><INPUT onclick="IpModeChange()" type=radio value="PPPoE" name="IpMode" > PPPoE</td>
+								<td>若ISP使用PPPoE请选择该项.</td>
+							</tr>
+						</table>
+						<table id="secPppoa" class="hidden">
+							<tr>
+								<td><INPUT onclick="IpModeChange()" type=radio value="PPPoA" name="IpMode" > PPPoA</td>
+								<td>若ISP使用PPPoA请选择该项.</td>
+							</tr>
+						</table>
+						<table id="secIpoa" class="hidden">
+							<tr>
+								<td><INPUT onclick="IpModeChange()" type=radio  value="IPoA" name="IpMode" > IPoA</td>
+								<td>若ISP使用IPoA请选择该项. </td>
+							</tr>
+						</table>
+						</div>
+						<!--Bridge Type-->
+						<table id="secBridgeType" class="bridge_select">
+							<tr>
+								<td>桥类型：</td>
+								<td>
+									<select id="bridgeMode" name="bridgeMode"> 
+										<option value="PPPoE_Bridged" >PPPoE_Bridged</option> 
+										<option value="IP_Bridged" >IP_Bridged</option>
+									</select> 
+								</td>
+							</tr>
+						</table>
+						<table id="secbridgeDhcprelay" class="bridge_select">
+							<tr>
+								<td>使能DHCP透传：</td>
+								<td>
+									<input id="cb_dhcprelay" type="checkbox" name="cb_dhcprelay" onClick="EnableDHCPRealy()" checked>
+                                    <input type="hidden" name="dhcprelay" value="No">
+								</td>
+							</tr>
+						</table>
+						<input id="multMode" type="hidden" value=0 name="multMode">
+						<table class="vlanmode_select">
+							<tr>
+								<td>VLAN模式：</td>
+								<td>
+									<select id='VLANMode' onChange="VLANModeChg()" size=1 name='VLANMode'>
+										<option value="TAG">TAG</option>
+										<option value="UNTAG">UNTAG</option>
+										<option value="TRANSPARENT">TRANSPARENT</option>
+									</select>
+								</td>
+							</tr>
+							<tr id="vlansec">
+								<td>VLAN ID[1-4094]：</td>
+								<td>      
+									<input id="vlan" maxLength="4" size="5" name="vlan" value="">
+									<input id="vlanId" type=hidden name="vlanId" value="No">
+									<input id="vlanUNTAG" type=hidden name="vlanUNTAG" value="4096">
+									<input id="vlanTRANSPARENT" type=hidden name="vlanTRANSPARENT" value="4097">
+                                </td>
+							</tr>
+							<tr id='priosec'>
+								<td>802.1p[0-7]：</td>
+								<td>
+									<input id="v8021P" maxLength=1 size=5 name="v8021P" value="">
+									<input id="vlanPri" type=hidden name="vlanPri" value="No">
+									<input id="vlanPriNone" type=hidden name="vlanPriNone" value="0">
+								</td>
+							</tr>
+							<tr id='mulvidsec'>
+								<td>组播VLAN ID[1-4094]：</td>
+								<td>
+									<input id="MulticastVID" maxLength=4 size=5 name="MulticastVID" value="">
+									<input type="hidden" name="MulVIDUsed" value="No">
+								</td>
+							</tr>
+							<tr id='MTUsec'>
+								<td id='MIUDescrip'>MTU[128-1492]：</td>
+								<td>
+									<input id="MTU" maxLength=4 size=5 name="MTU" value="">
+								</td>
+							</tr>
+						</table>
+						<table id="secNat" class="ipversion_select">
+							<tr>
+								<td>使能NAT：</td>
+								<td>
+									<input id="cb_nat" type="checkbox" name="cb_nat" onClick="EnableNatClick()" checked>
+                                    <input id="nat" type="hidden" value="" name="nat">
+								</td>
+							</tr>
+						</table>
+						<table  id="secIgmp" class="default_hidden">
+							<tr>
+								<td>使能IGMP Proxy：</td>
+								<td>
+					    			<input id="cb_enblIgmp" type="checkbox" name="cb_enblIgmp">
+                                    <input id="enblIgmp" type="hidden" value="No" name="enblIgmp">
+								</td>
+							</tr>
+						</table>
+						<div id="secRouteItems" class="linkmode_select">
+						<table id="secStaticItems">
+							<tr>
+								<td>IP 地址：</td>
+								<td><input id="wanIpAddress" maxLength=15 size=15 name=wanIpAddress value=""> </td>
+							</tr>
+							<tr>
+								<td>子网掩码：</td>
+								<td>
+									<INPUT id="wanSubnetMask" maxLength=15 size=15 name=wanSubnetMask value="">
+								</td>
+							</tr>
+							<tr>
+								<td>缺省网关：</td>
+								<td><INPUT id="defaultGateway" maxLength=15 size=15 name=defaultGateway value=""></td>
+							</tr>
+							<tr>
+								<td>首选DNS服务器：</td>
+								<td><INPUT id="dnsPrimary" maxLength=15 size=15 name=dnsPrimary value=""></td>
+							</tr>
+							<tr>
+								<td>备用DNS服务器：</td>
+								<td><INPUT id="dnsSecondary" maxLength=15 size=15 name=dnsSecondary value=""></td>
+							</tr>
+						</table>
+						</div>
+						<table id="secPppoeItems" class="ppp_select">
+							<tr>
+								<td>用户名：</td>
+								<td>
+									<input id="pppUserName" maxLength=63 size=15 name=pppUserName value="">
+                    			</td>
+							</tr>
+							<tr>
+								<td>密码:</td>
+								<td>
+									<span id="inpsw">
+										<input id="pppPassword" type="password" maxLength=63 size=15 name="pppPassword" value=""  onfocus="clearPPP(1)">
+									</span>
+								</td>
+							</tr>
+							<tr style="DISPLAY: none">
+		                      	<td>服务名称：</td>
+		                      	<td>
+		                      		<input id="pppServerName" maxLength=63 size=15 name="pppServerName">
+		                        </td>
+                            </tr>
+							<tr>
+								<td>拨号方式：</td>
+								<td>
+									<SELECT id="DialMethod" style="WIDTH: 117px" onchange=DialMethodChange() name="DialMethod"> 
+										<script>
+											var isCTSCSupported = "N/A";
+											var isCTJSSupported = "N/A";
+											var isCTPONCQSupported = "Yes";
+											if(isCTSCSupported=="Yes" || isCTJSSupported=="Yes" || isCTPONCQSupported == "Yes")
+											{
+												document.writeln('<OPTION value="OnDemand" >按需拨号</OPTION>');
+											}
+										</script>
+											<OPTION value="AlwaysOn" >自动连接</OPTION> 
+											<OPTION value="Manual" >手动拨号</OPTION>
+									</SELECT>
+
+								</td>
+							</tr>
+							<tr id="secManualDial" style="DISPLAY: none">
+								<td>&nbsp;</td>
+								<td>
+									<input id="pppDialButton" onclick=ManualCntSubmit() type=button value="手动拨号 "name="pppDialButton"> 
+								</td>
+							</tr>
+							<tr id="secIdleTime" style="DISPLAY: none">
+								<td>空闲超时（分钟）[1-4320]</td>
+								<td> 
+									<input id="pppTimeOut" maxLength=4 size=4 name="pppTimeOut">
+									<input name="pppv6Mode" value="0">
+								</td>
+							</tr>
+							<tr id='ppp_bi' class="ppp_route_bridge_select">
+								<td>PPPoE路由桥混合模式启用：</td>
+								<td>
+									<input id='cb_enable_pppbi' type=checkbox name='cb_enable_pppbi' >
+									<input id='enablepppbi' type=hidden name='enablepppbi'>
+									<input id='pppbiUsed' type=hidden name='pppbiUsed'>
+									<input id='pppbiDisabled' type=hidden name='pppbiDisabled' value='No'>
+								</td>
+			             	</tr>
+						</table>
+						<!--IPv6 WAN info-->
+						<table id="secIPv6Div" class="ipversion_select">
+							<tr id="TrIpv6AddrType">
+								<td>IPv6 WAN信息获取方式:</td>
+								<td>
+									<select id="IdIpv6AddrType" style="WIDTH: 130px" onChange="pdDefaultSel=1;OnIPv6Changed();" name="IdIpv6AddrType">
+									  <option value="SLAAC">SLAAC</option>
+                                      <option value="DHCP">DHCP</option>
+									  <option value="Static" selected>Static</option>
+									</select>
+								</td>
+							</tr>
+							<tr id="TrIpv6Addr">
+								<td>IPv6地址:</td>
+								<td>
+									<input id="IdIpv6Addr" maxLength=39 size=36 name="IdIpv6Addr" value="">&nbsp;/ 
+					  				<input id="IdIpv6PrefixLen" maxLength=3 size=3 name="IdIpv6PrefixLen" value=""> 
+								</td>
+							</tr>
+							<tr id="TrIpv6Gateway">
+								<td>IPv6默认网关:</td>
+								<td>
+									<input id="IdIpv6Gateway" maxLength=39 size=36 name="IdIpv6Gateway" value="">
+                                    <script language="JavaScript" type="text/JavaScript">
+										var ipv6gwstr = "N/A";
+										if("N/A" == ipv6gwstr)
+											setText('IdIpv6Gateway', "");
+										else
+											setText('IdIpv6Gateway', ipv6gwstr);
+									</script>
+								</td>
+							</tr>
+							<tr id="TrIpv6GatewayInfo">
+								<td></td>
+								<td>(IPv6默认网关不填内容，则自动获取)</td>
+							</tr>
+							<tr id="TrIpv6Dns1">
+								<td>IPv6首选DNS服务器:</td>
+								<td>
+									<input id="IdIpv6Dns1" maxLength=39 size=36 name="IdIpv6Dns1" value="">
+								</td>
+							</tr>
+							<tr id="TrIpv6Dns2">
+								<td>IPv6备用DNS服务器:</td>
+								<td>
+									<input id="IdIpv6Dns2" maxLength=39 size=36 name="IdIpv6Dns2" value="">
+								</td>
+							</tr>
+							<tr id='PDEnableSec'>
+								<td id='PDEnableDescrip'>PD使能：</td>
+								<td>
+									<input id='cb_enabledpd' type=checkbox onclick='cb_pdEnableChange()' name='cb_enabledpd' checked>
+		                            <input id='enablepd' type=hidden name='enablepd'>
+		                            <input id='PDUsed' type=hidden name='PDUsed'>
+		                            <input id='PDDisabled' type=hidden name='PDDisabled' value='No'>
+								</td>
+							</tr>
+							<tr id='pdmode_1'>
+								<td>前缀模式：</td>
+								<td>
+							   		<input id='pdmode' onclick='pdmodeChange()' type=radio value="Yes" name="pdmode" checked>Auto&nbsp;&nbsp; 
+		                            <input id='pdmode' onclick='pdmodeChange()' type=radio value="No" name="pdmode" >Manual&nbsp;&nbsp; 
+		                            <input id='pdmodeUsed' type=hidden name='pdmodeUsed'>
+		                            <input id='pdmodeDisabled' type=hidden name='pdmodeDisabled' value='No'>
+		                            <input id='pdmodeAuto' type=hidden name='pdmodeAuto' value='PrefixDelegation'>
+		                            <input id='pdmodeStatic' type=hidden name='pdmodeStatic' value='Static'>
+		                            <input id='pdmodeNone' type=hidden name='pdmodeNone' value='None'>
+								</td>
+							</tr>
+							<tr id='pdmode_2'>
+								<td>前缀地址：</td>
+								<td>
+									<input id='pdprefix' maxLength=39 size=36 name='pdprefix' value="">
+								</td>
+							</tr>
+							<tr id='pdmode_3'>
+								<td>首选寿命：</td>
+								<td>
+									<input id='pdprefixptime' maxLength=10 size=10 name='pdprefixptime' value="">
+									<STRONG style="COLOR: #ff0033">*</STRONG>[600 - 4294967295 s]
+								</td>
+							</tr>
+							<tr id='pdmode_4'>
+								<td>有效寿命：</td>
+								<td>
+									<input id='pdprefixvtime' maxLength=10 size=10 name='pdprefixvtime' value="">
+									<STRONG style="COLOR: #ff0033">*</STRONG>[600 - 4294967295 s]
+								</td>
+							</tr>
+							<tr id='dslite_1' class="dslite_select">
+								<td>DS-Lite启用：</td>
+								<td>
+									<input id='cb_enabledslite' onclick="cb_enabledsliteChange()" type=checkbox name='cb_enabledslite' >
+		                            <input id='enabledslite' type=hidden name='enabledslite'>
+		                            <input id='dsliteUsed' type=hidden name='dsliteUsed'>
+		                            <input id='dsliteDisabled' type=hidden name='dsliteDisabled' value='No'>
+								</td>
+							</tr>
+							<tr id='dslite_2'>
+								<td>DS-Lite模式：</td>
+								<td>
+									<input id='dslitemode' onclick='dslitemodeChange()' type=radio value="0" name="dslitemode" checked>Auto&nbsp;&nbsp; 
+		                            <input id='dslitemode' onclick='dslitemodeChange()' type=radio value="1" name="dslitemode" >Manual&nbsp;&nbsp; 
+								</td>
+							</tr>
+							<tr id='dslite_3'>
+								<td>DS-Lite服务器：</td>
+								<td>
+									<input id='dsliteaddress' maxLength=39 size=36 name='dsliteaddress' value="">
+								</td>
+							</tr>
+						</table>
+						<table>
+							<tr>
+								<td>
+									<input id="btnRemoveCnt" onclick="btnRemoveWanCnt()" type=button value="删除连接">
+								</td>
+							</tr>
+						</table>
+						<table>
+							<tr>
+								<td>
+									<input id="btnOK" onclick="btnSave();" type=button value="确定">
+								</td>
+								<td>
+									<input id="btnCancel" onclick="onCancel()" type=button value="取消">
+								</td>
+							</tr>
+						</table>
+						<input id="pppIdleTimeout" type=hidden value=0 name="pppIdleTimeout">
+		                <input type=hidden name="xponstate" value="Yes">
+		                <input type='hidden' id='Option60Enable1' name='Option60Enable1' value="">
+		                <input type='hidden' id='Option60Enable2' name='Option60Enable2' value="">
+		                <input type='hidden' id='Option60Enable3' name='Option60Enable3' value="">
+		                <input type='hidden' id='Option60Enable4' name='Option60Enable4' value="">
+		                
+		                <input type='hidden' id='Option60Type1' name='Option60Type1' value="">
+		                <input type='hidden' id='Option60Type2' name='Option60Type2' value="">
+		                <input type='hidden' id='Option60Type3' name='Option60Type3' value="">
+		                <input type='hidden' id='Option60Type4' name='Option60Type4' value="">
+
+		                <input type='hidden' id='Option60ValueMode1' name='Option60ValueMode1' value="">
+		                <input type='hidden' id='Option60ValueMode2' name='Option60ValueMode2' value="">
+		                <input type='hidden' id='Option60ValueMode3' name='Option60ValueMode3' value="">
+		                <input type='hidden' id='Option60ValueMode4' name='Option60ValueMode4' value="">
+
+		                <input type='hidden' id='Option60Value1' name='Option60Value1' value="">
+		                <input type='hidden' id='Option60Value2' name='Option60Value2' value="">
+		                <input type='hidden' id='Option60Value3' name='Option60Value3' value="">
+		                <input type='hidden' id='Option60Value4' name='Option60Value4' value="">
+					</form>
+				</div>
+				<!--
+				<table id="mytest2" style="border:1px solid blue;width:100%">
+					<tr>
+						<td colspan="2">
+							<div id="myDiv"><h2>select高度变化对页面的影响</h2></div>
+							<button id="get_pon_info" type="button">点击</button>
+						</td>
+					</tr>
+					<tr>
+						<script>
+						 function createTable(){ 
+							var div = document.getElementById("mytest1"); 
+							var table = document.createElement("table");//创建table 
+							var row = table.insertRow();//创建一行 
+							var cell = row.insertCell();//创建一个单元 
+							cell.width = "150";//更改cell的各种属性 
+							cell.style.backgroundColor = "#999999"; 
+							cell.innerHTML="你好吗？"; 
+							cell = row.insertCell();//创建一个单元 
+							cell.width = "150";//更改cell的各种属性 
+							cell.style.backgroundColor = "#999999"; 
+							cell.innerHTML="非常好！"; 
+							div.appendChild(table); 
+						}
+
+						function updateMode_basic(s)
+						{
+
+							this.value =s;
+							if(s==3){
+								createTable();
+							}
+							else
+							{
+								document.getElementById('mytest1').innerHTML = '';
+							}
+
+							console.log("child iframe:"+document.body.offsetHeight);
+							parent.reinitIframe();
+						}
+						</script>
+						<td>
+							<select name="sel" id="test" onchange="updateMode_basic(this.options[this.options.selectedIndex].value)">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>
+						<form method="post" enctype="multipart/form-data" action="#">  
+							<input type="file" name="img" /><input type="submit"  value="提交" />
+						</form>
+						</td>  
+						
+					</tr>
+					<tr >
+						<td><input type="button" name="test" id="get_html" value="获取"></td>
+						<td>
+							<div id="mytest1">测试ajax请求一张html页面</div> 
+						</td>
+					</tr>
+				</table>
+			-->
+			</div>
+		</div>
+		<script>
+		/*
+		window.onload = function() {
+			
+			$(window.parent.document).find("#iframe_content").load(function(){
+				var main = $(window.parent.document).find("#iframe_content");
+				var mainheight = $(document).height();
+				main.height=mainheight;
+				console.log("1:"+main.height);
+			});		
+		}*/
+		</script>
+	</body>
+<!--	<script src="http://192.168.1.1/getPONstats.itvdoor"></script>--><!--此处允许跨域请求-->
+</html>
