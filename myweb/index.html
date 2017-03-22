@@ -1,0 +1,136 @@
+<!DOCTYPE html> 
+<html lang="zh-CN"> 
+  <head> 
+      <meta charset="utf-8"> 
+      <!--不支持老版本IE--> 
+      <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+      <!--device-width自适应移动端宽度，initial-scale=1不进行缩放--> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ --> 
+    <title>myweb</title> 
+    <!-- Bootstrap 核心样式文件 --> 
+    <link href="../css/bootstrap/bootstrap.min.css" rel="stylesheet"> 
+  </head> 
+  <body> 
+    <!-----------------------------------------导航条设计开始---------------------------------> 
+      <!--黑色导航条样式为navbar-inverse，白色样式为default  ， .navbar-fixed-top导航条固定在顶端--> 
+        <nav class="navbar navbar-inverse navbar-fixed-top"> 
+            <div class="container-fluid"> 
+                <!-- Brand and toggle get grouped for better mobile display --> 
+                <div class="navbar-header"> 
+                   <!------button为实现响应式布局，如果在手机上查看，点击button就可以弹出菜单----> 
+                   <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"> 
+                       <span class="sr-only">Toggle navigation</span> 
+                       <span class="icon-bar"></span> 
+                       <span class="icon-bar"></span> 
+                       <span class="icon-bar"></span> 
+                   </button> 
+                   <a class="navbar-brand" href="#">ShareGIS</a><!---方log的地方--> 
+                </div>
+
+                <!-- 当浏览器小于某个值时，点击button图标显示导航条的内容（注意这里的id与button 的id对应）—>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"> 
+                    <!--具体菜单项--> 
+                    <ul class="nav navbar-nav"> 
+                        <li class="active"><a href="#">首页 <span class="sr-only">(current)</span></a></li><!--普通菜单--> 
+                        <li class="dropdown"><!--下拉菜单--> 
+                              <a class="dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> 
+                                博客 
+                                <span class="caret"></span> 
+                              </a> 
+                              <ul class="dropdown-menu dropdowncolor" aria-labelledby="dropdownMenu1"> 
+                                <li><a href="#">GIS</a></li><!--下拉菜单项--> 
+                                <li><a href="#">.NET基础</a></li> 
+                                <li><a href="#">Asp .NET MVC</a></li> 
+                                <li><a href="#">前端</a></li> 
+                              </ul> 
+                       </li> 
+                       <li><a href="#">我的生活</a></li> 
+                       <li><a href="#">教程</a></li> 
+                       <li><a href="#">电脑小知识</a></li> 
+                       <li><a href="#">留言板</a></li> 
+                       <li><a href="#">关于我</a></li> 
+                    </ul> 
+                   <!--搜索表单--> 
+                   <form class="navbar-form navbar-left" role="search"> 
+                       <div class="form-group"> 
+                           <input type="text" class="form-control" placeholder="Search"> 
+                       </div> 
+                       <button type="submit" class="btn navbar-btn">搜索</button> 
+                   </form> 
+                   <!--导航栏右部，一般的登录 注册--> 
+                   <ul class="nav navbar-nav navbar-right"> 
+                       <li><a href="#">登录</a></li> 
+                       <li><a href="#">注册</a></li> 
+                   </ul> 
+               </div><!-- /.navbar-collapse --> 
+           </div><!-- /.container-fluid --> 
+        </nav> 
+       <!------------------------------------------导航条结束-------------------------------->
+
+       <!---------主体------------------> 
+        <div class="container"> 
+            <!--声明行--> 
+            <div class="row"> 
+                <!--为3的栅格系统，相对于一行放四个--> 
+                <div class="col-sm-3"> 
+                    <!--img-thumbnail 方形加外边框--> 
+                    <img src="/Images/八镜台.jpg"  class="img-thumbnail" alt="八镜台"/> 
+                    <h3>八镜台</h3> 
+                    <p>八境台坐落在江西省赣州市北八境公园内，章江和贡江在这里汇合，为省级重点风景名胜区。</p> 
+                    <p><a href="#" class="btn btn-success" role="button">详细</a></p> 
+                </div> 
+                <div class="col-sm-3"> 
+                    <img src="/Images/标建2.jpg" class="img-thumbnail" alt="标建" /> 
+                    <h3>商场</h3> 
+                    <p>赣州第一条真正意义上的步行街。餐饮，购物都挺多商户的。可惜没有什么大的品牌进驻，购物群体也多是学生什么的.</p> 
+                    <p><a href="#" class="btn btn-success" role="button">详细</a></p> 
+                </div> 
+                <div class="col-sm-3"> 
+                    <img src="/Images/标建4.jpg" class="img-thumbnail" alt="标建2"/>  
+                    <h3>仿古建筑</h3> 
+                    <p>如佛所谓“赣州文清路，模特满大街，豪车如流水，摩人挤掉鞋”。正是今天赣州文清路极尽繁华的真实写照。</p> 
+                    <p><a href="#" class="btn btn-success" role="button">详细</a></p> 
+                </div> 
+                <div class="col-sm-3"> 
+                    <img src="/Images/城墙2.jpg" class="img-thumbnail" alt="标建2"/>  
+                    <h3>古城墙</h3> 
+                    <p>赣州古城墙，始建于汉代，距今已有二千年的历史，后来经过南宋、元、明、清、民国，历时900多年的不断修缮、加固</p> 
+                    <p><a href="#" class="btn btn-success" role="button">详细</a></p> 
+                </div> 
+            </div> 
+            <div class="row"> 
+                <div class="col-sm-3"> 
+                      <!--img-cricle 圆形图框--> 
+                    <img src="/Images/郁孤台.jpg"  class="img-circle" alt="八镜台"/> 
+                    <h3>郁孤台</h3> 
+                    <p>郁孤台位于赣州城区西北部贺兰山顶，海拔131米，是城区的制高点，赣州宋代古城墙自台下逶迤而过，市级文物保护单位</p> 
+                    <p><a href="#" class="btn btn-success" role="button">详细</a></p> 
+                </div> 
+                <div class="col-sm-3"> 
+                    <img src="/Images/高层2.jpg" class="img-circle" alt="标建" /> 
+                    <h3>高层建筑</h3> 
+                    <p>高层建筑，建筑高度大于27米的住宅和建筑高度大于24m的非单层厂房、仓库和其他民用建筑。</p> 
+                    <p><a href="#" class="btn btn-success" role="button">详细</a></p> 
+                </div> 
+                <div class="col-sm-3"> 
+                    <img src="/Images/公园.jpg" class="img-circle" alt="标建2"/>  
+                    <h3>赣州公园</h3> 
+                    <p>赣州公园是赣州城区最早的一个综合性公园，总面积2.97公顷。公园位于赣州市老城区文清路64号。</p> 
+                    <p><a href="#" class="btn btn-success" role="button">详细</a></p> 
+                </div> 
+                <div class="col-sm-3"> 
+                    <img src="/Images/蒋经国故居.jpg" class="img-circle" alt="标建2"/>  
+                    <h3>蒋经国故居</h3> 
+                    <p>现保存较好的主要是在章江古城墙处，故居是1940年蒋经国主持兴建的仿俄式砖木结构建筑，面积为170多平方米。</p> 
+                    <p><a href="#" class="btn btn-success" role="button">详细</a></p> 
+                </div> 
+            </div> 
+        </div>
+    <!-- jQuery CDN加速 --> 
+    <script src="../js/jquery-2.0.3.min.js"></script> 
+    <!---bootstrap的核心JS文件必须放在jQuery文件之后，因为bootstrap基于jQuery --> 
+    <script src="../js/bootstrap.min.js"></script> 
+  </body> 
+</html>

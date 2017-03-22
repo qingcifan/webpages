@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 1.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>LAN侧配置</TITLE>
+<META http-equiv=Content-Language content=zh-cn>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<LINK href="/css/common.css" type=text/css rel=stylesheet>
+<LINK href="/css/normalize.css" type=text/css rel=stylesheet>
+<script language=javascript src="js/jquery-1.8.3.min.js"></script>
+<SCRIPT language=javascript src="/js/util.js"></SCRIPT>
+<SCRIPT language=javascript src="/js/common.js"></SCRIPT>
+<META content="MSHTML 6.00.6000.16809" name=GENERATOR>
+</HEAD>
+<BODY>
+<div class="item_container" id="item_container" style="width:100%;">
+
+<div class="item_wapper">
+    <div class="item_title">
+        <div class="_title"><span>IPv4配置</span></div>
+    </div>
+    <div class="item_content">    
+        <div calss="_title">&nbsp;</div>
+        <div class="_content" style="font-size:10pt;text-align:left;padding:5px 20px;">
+            <form name="ConfigForm" action="/cgi-bin/net-dhcp.asp" method="post">
+                <input type="hidden" name="portDHCPRelayFlag" value="N/A">
+                <input type="hidden" name="portLan1" value="N/A">
+                <input type="hidden" name="portLan2" value="N/A">
+                <input type="hidden" name="portLan3" value="N/A">
+                <input type="hidden" name="portLan4" value="N/A">
+                <input type="hidden" name="portSSID1" value="N/A">
+                <input type="hidden" name="portSSID2" value="N/A">
+                <input type="hidden" name="portSSID3" value="N/A">
+                <input type="hidden" name="portSSID4" value="N/A">
+                <input type="hidden" name="DeviceDHCPRelayFlag" value="N/A">
+                <input type="hidden" name="IPV4_Flag" value="0">
+                <input type="hidden" name="EthendIPcount" value="100">
+                <input type="hidden" name="DeviceendIPcount" value="80"> 
+                <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+                    <TBODY>
+                        <TR>
+                            <TD style="text-align:left;">
+                                <B>本地网络配置</B><BR><BR>
+                                用户侧的DHCP打开和关闭、租约时间（1分钟、1小时、1天、1周）。<BR>
+                                DHCP地址区间设置及与设备类型的映射。<BR>
+                                DHCP工作模式（DHCP Server和DHCP relay）设置。<BR><BR>
+                            </TD>
+                        </TR>
+                        <TR>
+                            <TD>
+                                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                                    <TBODY>
+                                        <TR>
+                                            <TD >IP地址:</TD>
+                                            <TD>
+                                                <INPUT maxLength=15 onchange=setDhcpAddresses(this.value) name="ethIpAddress" value="192.168.1.1">
+                                            </TD>
+                                        </TR>
+                                        <TR>
+                                            <TD>子网掩码:</TD>
+                                            <TD>
+                                                <INPUT maxLength=15 onchange=setDhcpAddresses(ethIpAddress.value) name="ethSubnetMask" value="255.255.255.0">
+                                            </TD>
+                                        </TR>
+                                    </TBODY>
+                                </TABLE>
+                            </TD>
+                        </TR>
+                        <TR>
+                            <TD>
+                                <TABLE cellSpacing=0 cellPadding=0 border=0>          
+                                    <TBODY>
+                                        <TR>
+                                            <TD colSpan=2>
+                                                <INPUT id="dhcpSrvType" onclick="typeClick()" type=radio value="0" name="dhcpSrvType" > <NOBR>禁用DHCP Server</NOBR>  
+                                            </TD>
+                                        </TR>
+                                        <TR>
+                                            <TD colSpan=2>
+                                                <INPUT id="dhcpSrvType" onclick="typeClick()"  type=radio  value="1" name="dhcpSrvType" checked> 
+                                                    <NOBR>开启DHCP Server</NOBR>  
+                                                    <INPUT id="dhcpSrvType" onclick="typeClick()"  type=radio  value="2" name="dhcpSrvType" > 
+                                                        <NOBR>开启DHCP Relay</NOBR>
+                                            </TD>
+                                            <TD>&nbsp;&nbsp;&nbsp;</TD>
+                                            <TD>
+                                                <NOBR>设备类型:&nbsp; 
+                                                    <SELECT onchange="IpPoolIndexChange()" size=1 name="IpPoolIndex"> 
+                                                        <OPTION value="HGW" >HGW
+                                                        <OPTION value="STB" >STB
+                                                        <OPTION value="Phone" >Phone
+                                                        <OPTION value="Camera" >Camera
+                                                        <OPTION value="Computer" selected>Computer</OPTION>
+                                                    </SELECT>
+                                                </NOBR>
+                                            </TD>
+                                        </TR>
+                                        <TR id="dhcpstartaddr">
+                                            <TD>起始IP地址:</TD>
+                                            <TD>
+                                                <INPUT maxLength=15 name="dhcpEthStart" value="192.168.1.2">
+                                            </TD>
+                                            <TD>&nbsp;&nbsp;&nbsp;</TD>
+                                            <TD>
+                                                <INPUT maxLength=15 name="dhcpEthStartFrag" value="192.168.1.2">
+                                            </TD>
+                                        </TR>
+                                        <TR id="dhcpendaddr">
+                                            <TD>结束IP地址:</TD>
+                                            <TD>
+                                                <INPUT maxLength=15 name="dhcpEthEnd" value="252">
+                                            </TD>
+                                            <TD>&nbsp;&nbsp;&nbsp;</TD>
+                                            <TD style="display:block">
+                                                <INPUT maxLength=15 name="dhcpEthEndFrag" value="100">
+                                            </TD>
+                                        </TR>
+                                        <TR id="dhcplease">
+                                            <TD><NOBR>租期:</NOBR></TD>
+                                            <TD>
+                                                <SELECT size=1 name='dhcpLeasedTimeFrag' id='dhcpLeasedTimeFrag'>
+                                                </SELECT>
+                                                <SCRIPT language=JavaScript type=text/javascript>
+                                                    initLeaseTimeTable();
+                                                </SCRIPT>
+                                            </TD>
+                                            <TD>
+                                                <input type=hidden name=RouteIPChangeFlag value=0>
+                                            </TD>
+                                            <TD style="display:none">设备DHCP relay: 
+                                                <INPUT type=checkbox onclick=devicedhcpRelay() name=enableRelay >
+                                            </TD>
+                                        </TR>
+                                    </TBODY>
+                                </TABLE>
+                            </TD>
+                        </TR>
+                        <TR>
+                            <TD style="display:none">
+                                <DIV id="portrelayEnable">
+                                    端口DHCP relay  <INPUT id=enablePortRelay onclick="dhcpSecPortRelay()" type=checkbox name="enablePortRelay" > 
+                                </DIV>
+                            </TD>
+                        </TR>
+                        <TR>
+                            <TD>
+                                <DIV id="portrelayInfo" style="display:none;">
+                                    <TABLE cellSpacing=0 cellPadding=0 border=0>
+                                        <TBODY>
+                                            <TR>
+                                                <TD>
+                                                    <DIV id=sec_lan1><INPUT id=PortRelay_lan1 type=checkbox name="PortRelay_lan1" > LAN 1 &nbsp; </DIV>
+                                                    <DIV id=sec_ssid1><INPUT id=PortRelay_ssid1 type=checkbox name="PortRelay_ssid1" > SSID 1 </DIV>
+                                                </TD>
+                                                <TD>
+                                                    <DIV id=sec_lan2><INPUT id=PortRelay_lan2 type=checkbox name="PortRelay_lan2" > LAN 2 &nbsp; </DIV>
+                                                    <DIV id=sec_ssid2><INPUT id=PortRelay_ssid2 type=checkbox name="PortRelay_ssid2" > SSID 2 </DIV>
+                                                </TD>
+                                                <TD>
+                                                    <DIV id=sec_lan3><INPUT id=PortRelay_lan3 type=checkbox name="PortRelay_lan3" > LAN 3 &nbsp; </DIV>
+                                                    <DIV id=sec_ssid3><INPUT id=PortRelay_ssid3 type=checkbox name="PortRelay_ssid3" > SSID 3 </DIV>
+                                                </TD>
+                                                <TD>
+                                                    <DIV id=sec_lan4><INPUT id=PortRelay_lan4 type=checkbox name="PortRelay_lan4" > LAN 4 &nbsp; </DIV>
+                                                    <DIV id=sec_ssid4><INPUT id=PortRelay_ssid4 type=checkbox name="PortRelay_ssid4" > SSID 4 </DIV>
+                                                </TD>
+                                            </TR>
+                                        </TBODY>
+                                    </TABLE>
+                                </DIV>
+                            </TD>
+                        </TR>
+                        <TR>
+                            <TD align=center style="display:none;"> 
+                                    <INPUT style="DISPLAY: none" onclick=btnSaveIPv4() type=button value=保存 name=button>
+                                    <INPUT style="DISPLAY: none" onclick=btnSaveIPv4() type=button value=保存/重启 name=button>
+                            </TD>
+                        </TR>
+                        <TR>
+                            <TD id="DhcprelayIP">
+                                    远端服务器IP:<INPUT maxLength=15 name="dhcpRelayServerIP" value="">
+                            </TD>
+                        </TR>
+                        <TR><TD>&nbsp;</TD></TR>
+                        <TR>
+                            <TD align=middle>
+                                <BUTTON onclick="btnSaveIPv4();" type="button" name=btnApply1 value="Apply">保存</BUTTON>
+                            </TD>
+                        </TR>
+                    </TBODY>
+                </TABLE>
+            </form>
+        </div>
+    </div>
+ </div>  
+ <!--IPv6--> 
+<div class="item_wapper">
+	<div class="item_title">
+		<div class="_title"><span>IPv6配置</span></div>
+	</div>
+	<div class="item_content">    
+		<div calss="_title">&nbsp;</div>
+		<div class="_content" style="font-size:10pt;text-align:left;padding:5px 20px;">
+			<FORM name="RAConfigForm" action="/cgi-bin/net-dhcp.html" method="post">
+                
+            </FORM>
+		</div>
+	</div>
+</div>
+</div>
+</BODY>
+</HTML>

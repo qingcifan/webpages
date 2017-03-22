@@ -1,0 +1,115 @@
+<html>
+<head>
+	<title>test</title>
+	<link rel="stylesheet" type="text/css" href="./css/main.css">
+</head>
+<body>
+	<div id="content" style="border: 1px solid red;width: 100%">   
+		<button onclick="turnPage('weixin.html')">微信</button>      
+		<button onclick="turnPage('tongxunlu.html')">通讯录</button>     
+		<button onclick="turnPage('zhaopengyou.html')">找朋友</button>     
+		<button onclick="turnPage('wo.html')">我</button> 
+	</div> 
+	<br/>
+		<div id="content" style="border: 1px solid red;width: 100%">   
+		<button onclick="turnPage('weixin.html')">微信</button>      
+		<button onclick="turnPage('tongxunlu.html')">通讯录</button>     
+		<button onclick="turnPage('zhaopengyou.html')">找朋友</button>     
+		<button onclick="turnPage('wo.html')">我</button> 
+	</div> 
+	<br/> 
+		<div id="content" style="border: 1px solid red;width: 100%">   
+		<button onclick="turnPage('weixin.html')">微信</button>      
+		<button onclick="turnPage('tongxunlu.html')">通讯录</button>     
+		<button onclick="turnPage('zhaopengyou.html')">找朋友</button>     
+		<button onclick="turnPage('wo.html')">我</button> 
+	</div> 
+	<br/>
+		<div id="content" style="border: 1px solid red;width: 100%">   
+		<button onclick="turnPage('weixin.html')">微信</button>      
+		<button onclick="turnPage('tongxunlu.html')">通讯录</button>     
+		<button onclick="turnPage('zhaopengyou.html')">找朋友</button>     
+		<button onclick="turnPage('wo.html')">我</button> 
+	</div> 
+	<br/>
+		<div id="content" style="border: 1px solid red;width: 100%">   
+		<button onclick="turnPage('weixin.html')">微信</button>      
+		<button onclick="turnPage('tongxunlu.html')">通讯录</button>     
+		<button onclick="turnPage('zhaopengyou.html')">找朋友</button>     
+		<button onclick="turnPage('wo.html')">我</button> 
+	</div> 
+	<br/> 
+		<div id="content" style="border: 1px solid red;width: 100%">   
+		<button onclick="turnPage('weixin.html')">微信</button>      
+		<button onclick="turnPage('tongxunlu.html')">通讯录</button>     
+		<button onclick="turnPage('zhaopengyou.html')">找朋友</button>     
+		<button onclick="turnPage('wo.html')">我</button> 
+	</div> 
+		<br/>
+		<div id="content" style="border: 1px solid red;width: 100%">   
+		<button onclick="turnPage('weixin.html')">微信</button>      
+		<button onclick="turnPage('tongxunlu.html')">通讯录</button>     
+		<button onclick="turnPage('zhaopengyou.html')">找朋友</button>     
+		<button onclick="turnPage('wo.html')">我</button> 
+	</div> 
+	<br/>
+		<div id="content" style="border: 1px solid red;width: 100%">   
+		<button onclick="turnPage('weixin.html')">微信</button>      
+		<button onclick="turnPage('tongxunlu.html')">通讯录</button>     
+		<button onclick="turnPage('zhaopengyou.html')">找朋友</button>     
+		<button onclick="turnPage('wo.html')">我</button> 
+	</div> 
+	<br/> 
+		<div id="content" style="border: 1px solid red;width: 100%">   
+		<button onclick="turnPage('weixin.html')">微信</button>      
+		<button onclick="turnPage('tongxunlu.html')">通讯录</button>     
+		<button onclick="turnPage('zhaopengyou.html')">找朋友</button>     
+		<button onclick="turnPage('wo.html')">我</button> 
+	</div> 
+	<br/>  
+	<div id="content" style="border: 1px solid red;width: 100%">   
+	<script>
+	 function createTable(){ 
+		var div = document.getElementById("mytest1"); 
+		var table = document.createElement("table");//创建table 
+		var row = table.insertRow();//创建一行 
+		var cell = row.insertCell();//创建一个单元 
+		cell.width = "150";//更改cell的各种属性 
+		cell.style.backgroundColor = "#999999"; 
+		cell.innerHTML="你好吗？"; 
+		cell = row.insertCell();//创建一个单元 
+		cell.width = "150";//更改cell的各种属性 
+		cell.style.backgroundColor = "#999999"; 
+		cell.innerHTML="非常好！"; 
+		div.appendChild(table); 
+	}
+
+	function updateMode_basic(s)
+	{
+
+		this.value =s;
+		if(s==3){
+			createTable();
+		}
+		else
+		{
+			document.getElementById('mytest1').innerHTML = '';
+		}
+
+	}
+	</script>
+
+	<select name="sel" id="test" onchange="updateMode_basic(this.options[this.options.selectedIndex].value)">
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		<option value="5">5</option>
+	</select>
+
+	</div> 
+	<br/> 
+	<div id="mytest1"></div>   
+</body>
+</html>
+
