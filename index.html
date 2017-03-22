@@ -2,47 +2,32 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="zh-CN">
   <head>
-    <meta charset="gb2312">
+    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>index</title>
     <script src="js/jquery-1.8.3.min.js"></script>
-    <script charset="gb2312" src="js/menu.js"></script>
+    <script charset="UTF-8" src="js/menu.js"></script>
     <script language=javascript src="/js/util.js"></script>
   	<link rel="stylesheet" type="text/css" href="./css/common.css">
 	<link rel="stylesheet" type="text/css" href="./css/cssreset-min.css">
 	<link rel="stylesheet" type="text/css" href="./css/main.css">
-<!--	<link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>-->
     <script type="text/javascript">
 	onload = function () {
-		MakeMainMenu("×´Ì¬", "Éè±¸ĞÅÏ¢");//³õÊ¼»¯Ò»¼¶²Ëµ¥Ñ¡Ïî£¬¶ş¼¶²Ëµ¥Ä¬ÈÏÑ¡ÖĞµÚÒ»Ïî
-		$('#item_name')[0].innerHTML = "×´Ì¬";
-		//$("ul#L1_menu_txt li:first-child").click();
+		MakeMainMenu("çŠ¶æ€", "è®¾å¤‡ä¿¡æ¯");//åˆå§‹åŒ–ä¸€çº§èœå•é€‰é¡¹ï¼ŒäºŒçº§èœå•é»˜è®¤é€‰ä¸­ç¬¬ä¸€é¡¹
+		$('#item_name')[0].innerHTML = "çŠ¶æ€";
 		$("ul#L2_menu_txt li:first-child").click();
-		//printsArray();
 	}
 
 	function onAppy()
 	{
-		/*µ÷ÓÃiframe×ÓÒ³Ãæº¯Êı·½·¨*/
+		/*è°ƒç”¨iframeå­é¡µé¢å‡½æ•°æ–¹æ³•*/
 		//$("#iframe_content")[0].contentWindow.showChild(); 
 		//window.frames["iframe_content"].window.showChild(); 
 	}
 
-	function showMsg(str)
-	{
-		alert("À´×Ô×ÓÒ³Ãæ£¡"+str);
-	}
-
-	function printsArray()
-	{
-		var i=0;
-		for(i; i<14; i++)
-			console.log("i="+i+";"+SubMenuArray[i].Text);
-	}
-
 	function toggleSub(ob){
-		/*´¥·¢Ò»¼¶²Ëµ¥*/
+		/*è§¦å‘ä¸€çº§èœå•*/
 		if($(ob)[0].className == "L1_menu_link"){
 			var index = $(ob).index();
 			var name = $(ob)[0].firstChild.innerHTML;
@@ -63,14 +48,13 @@
 			$('ul#L1_menu_txt li.L1_menu_link a').css("color", "#000");
 			$("ul#L2_menu_txt li:first-child").click();
 		}
-		/*´¥·¢¶ş¼¶²Ëµ¥*/
+		/*è§¦å‘äºŒçº§èœå•*/
 		if($(ob)[0].className == "L2_menu_link"){
 			var name = $(ob)[0].firstChild.innerHTML;
 			var idx = $(ob).attr('id');
 			$(ob).removeClass('L2_menu_link').addClass('L2_menu_active');
 			$(ob).siblings('li').removeClass('L2_menu_active').addClass('L2_menu_link');
 			$('#menu_name')[0].innerHTML = SubMenuArray[idx].Text;
-	
 		}	
 	
 		if($(ob)[0].className == "L2_menu_active"){
@@ -104,8 +88,8 @@
 		  	<div id="hd">
 		       <div id="right">
 		       	<ul>
-		       		<li style="padding-left:680px;">»¶Ó­Äú£¡</li>
-		       		<li style="padding-left:10px;" ><a onclick="onAppy()"><span style="cursor:pointer">ÍË³ö</span></a></li>
+		       		<li style="padding-left:680px;">æ¬¢è¿æ‚¨ï¼</li>
+		       		<li style="padding-left:10px;" ><a onclick="onAppy()"><span style="cursor:pointer">é€€å‡º</span></a></li>
 		       	</ul>
 		       </div>
 		    </div>
@@ -115,13 +99,13 @@
 		        <div id="item_list">
 		        	<div id="item_product_info">
 		        		<ul>
-		        			<li style="width:434px; background-color:#427594;text-align: right;">Íø¹ØÃû³Æ£º¼ÒÍ¥Íø¹Ø</li>
-		        			<li style="width:219px; *padding-left:0px;/*IE7*/">ĞÍºÅ:DT741</li>
+		        			<li style="width:434px; background-color:#427594;text-align: right;">XXXXXXXX</li>
+		        			<li style="width:219px; *padding-left:0px;/*IE7*/">XXXX</li>
 		        		</ul>
 		        	</div>
 		        	<div class="fixbox"></div>
 		        	<div id="item_menu">
-		        		<!--¶¯Ì¬²Ëµ¥-->
+		        		<!--åŠ¨æ€èœå•-->
 		        	</div>	
 		        </div>
 		    </div>
@@ -132,7 +116,7 @@
 		    </div>
 	    </div>
 		<!--content-->
-		<div class="fixbox"></div><!--Çå³ı¸¡¶¯-->
+		<div class="fixbox"></div><!--æ¸…é™¤æµ®åŠ¨-->
 		<div class='main_content' id="main_content">
 			<div id="left_menu" style="vertical-align:top;"><!--menu-->
 				<!--for IE7-->
@@ -145,14 +129,14 @@
 			
 				</div>
 		   	</div>
-		   	<div id="left_content" style="width:505px;"><!--×ó²àÄÚÈİ-->
+		   	<div id="left_content" style="width:505px;"><!--å·¦ä¾§å†…å®¹-->
 		   		<div class="content" name="ifm_content" style="text-align:center; width:100%;">
 		 			
 		   			<iframe name="iframe_content" id="iframe_content" scrolling="no" frameborder="0" onload="reinitIframe() " width="100%" src="info.html">
 		   			</iframe>
 	
 				   	<script type="text/javascript" language="javascript">
-				   /*·½·¨Ò»:*/
+				   /*æ–¹æ³•ä¸€:*/
 					function iFrameHeight() {
 					
 						var isIE=!!window.ActiveXObject; 
@@ -172,7 +156,7 @@
 						}
 					}
 
-					/*·½·¨¶ş:ÓÅµãÖ»ÒªĞŞ¸Ä¸¸Ò³Ãæjs¼´¿É*/	
+					/*æ–¹æ³•äºŒ:ä¼˜ç‚¹åªè¦ä¿®æ”¹çˆ¶é¡µé¢jså³å¯*/	
 					var browserVersion = window.navigator.userAgent.toUpperCase();
 					var isOpera = false;
 					var isFireFox = false;
@@ -210,17 +194,17 @@
 					        }
 					    }catch (ex){} 
 					} 
-					//window.setInterval("reinitIframe()", 20);
+					window.setInterval("reinitIframe()", 20);
 				
 					</script>
 		   		</div>
 		   	</div>
 		   	<div id="right_help">
 		   		<div class="content"></div><!--for IE7-->
-		   	</div><!--°ïÖú-->
+		   	</div><!--å¸®åŠ©-->
 		</div>
 		<!--footer-->
-		<div class="fixbox"></div><!--Çå³ı¸¡¶¯-->
+		<div class="fixbox"></div><!--æ¸…é™¤æµ®åŠ¨-->
 		<div class="main_footer" style="width:100%;">
 			<div class='yui3-gg' id="layoutt">
 				<div class="yui3g-u-1-3" id="ft-nav"></div>

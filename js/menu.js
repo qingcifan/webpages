@@ -125,45 +125,45 @@ var SubMenuArray = new Array();
 if(vPageMap[1][0] == '1'){
 	SubMenuArray[sCount++] = new SubMenuNodeinfo("");
 	if(vPageMap[1][1] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "×´Ì¬", "/cgi-bin/sta-device.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "çŠ¶æ€", "/cgi-bin/sta-device.asp", "");
 		
 	else if(vPageMap[1][2] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "×´Ì¬", "/cgi-bin/sta-network.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "çŠ¶æ€", "/cgi-bin/sta-network.asp", "");
 	else if(vPageMap[1][3] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "×´Ì¬", "/cgi-bin/sta-user.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "çŠ¶æ€", "/cgi-bin/sta-user.asp", "");
 	else if(vPageMap[1][4] == '1')
 		if(VoipType == 'H.248')
-			MenuArray[iCount++] = new MenuNodeConstruction(1, "×´Ì¬", "/cgi-bin/sta-VoIP248.asp", "");
+			MenuArray[iCount++] = new MenuNodeConstruction(1, "çŠ¶æ€", "/cgi-bin/sta-VoIP248.asp", "");
 		else
-			MenuArray[iCount++] = new MenuNodeConstruction(1, "×´Ì¬", "/cgi-bin/sta-VoIP.asp", "");	
+			MenuArray[iCount++] = new MenuNodeConstruction(1, "çŠ¶æ€", "/cgi-bin/sta-VoIP.asp", "");	
 	else if(vPageMap[1][5] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "×´Ì¬", "/cgi-bin/sta-acs.asp", "");							
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "çŠ¶æ€", "/cgi-bin/sta-acs.asp", "");							
 }
 
 if(vPageMap[1][1] == '1'){
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "Éè±¸ĞÅÏ¢", "/cgi-bin/sta-device.asp", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("ÔËĞĞÉè±¸ĞÅÏ¢");//1
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "è®¾å¤‡ä¿¡æ¯", "/cgi-bin/sta-device.asp", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("è¿è¡Œè®¾å¤‡ä¿¡æ¯");//1
 }
 
 if(vPageMap[1][2] == '0'){
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "ÍøÂç²àĞÅÏ¢", "/cgi-bin/sta-network.asp", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("ÍøÂç²àĞÅÏ¢");//2
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "ç½‘ç»œä¾§ä¿¡æ¯", "/cgi-bin/sta-network.asp", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("ç½‘ç»œä¾§ä¿¡æ¯");//2
 }
 
 if(vPageMap[1][3] == '1'){
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "ÓÃ»§²àĞÅÏ¢", "/cgi-bin/sta-user.asp", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("ÓÃ»§²àÏêÏ¸ĞÅÏ¢");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "ç”¨æˆ·ä¾§ä¿¡æ¯", "/cgi-bin/sta-user.asp", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("ç”¨æˆ·ä¾§è¯¦ç»†ä¿¡æ¯");
 }
 	
 if(vPageMap[1][4] == '1'){
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "¿í´øÓïÒôĞÅÏ¢", "/cgi-bin/sta-VoIP.asp", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("¿í´øÓïÒôÏêÏ¸ĞÅÏ¢");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "å®½å¸¦è¯­éŸ³ä¿¡æ¯", "/cgi-bin/sta-VoIP.asp", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("å®½å¸¦è¯­éŸ³è¯¦ç»†ä¿¡æ¯");
 }
 
 if(vPageMap[1][5] == '1')
 {
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "Ô¶³Ì¹ÜÀí×´Ì¬", "/cgi-bin/sta-acs.asp", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("Ô¶³Ì¹ÜÀí×´Ì¬");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "è¿œç¨‹ç®¡ç†çŠ¶æ€", "/cgi-bin/sta-acs.asp", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("è¿œç¨‹ç®¡ç†çŠ¶æ€");
 }
 	
 //Net->2
@@ -171,158 +171,158 @@ if(vPageMap[1][5] == '1')
 if(vPageMap[2][0] == '1'){
 	SubMenuArray[sCount++] = new SubMenuNodeinfo("");
 	if(vPageMap[2][1] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "ÍøÂç", "/info.html", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç½‘ç»œ", "/info.html", "");
 	else if(vPageMap[2][2] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "ÍøÂç", "/cgi-bin/net-binding.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç½‘ç»œ", "/cgi-bin/net-binding.asp", "");
 	else if(vPageMap[2][3] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "ÍøÂç", "/net-dhcp.html", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç½‘ç»œ", "/net-dhcp.html", "");
 	else if(vPageMap[2][4] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "ÍøÂç", "/cgi-bin/net-wlan.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç½‘ç»œ", "/cgi-bin/net-wlan.asp", "");
 	else if(vPageMap[2][5] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "ÍøÂç", "/cgi-bin/net-tr069.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç½‘ç»œ", "/cgi-bin/net-tr069.asp", "");
 	else if(vPageMap[2][9] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "ÍøÂç", "/cgi-bin/net-phoneapp.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç½‘ç»œ", "/cgi-bin/net-phoneapp.asp", "");
 	else if(vPageMap[2][6] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "ÍøÂç", "/cgi-bin/net-qos.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç½‘ç»œ", "/cgi-bin/net-qos.asp", "");
 	else if(vPageMap[2][7] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "ÍøÂç", "/cgi-bin/net-time.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç½‘ç»œ", "/cgi-bin/net-time.asp", "");
 	else if(vPageMap[2][8] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "ÍøÂç", "/cgi-bin/net-routeset.asp", "");										
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç½‘ç»œ", "/cgi-bin/net-routeset.asp", "");										
 }
 
 if(vPageMap[2][1] == '1'){
-		MenuArray[iCount++] = new MenuNodeConstruction(2, "¿í´øÉèÖÃ", "info.html", "");
-		SubMenuArray[sCount++] = new SubMenuNodeinfo("¿í´øÉèÖÃ");
+		MenuArray[iCount++] = new MenuNodeConstruction(2, "å®½å¸¦è®¾ç½®", "info.html", "");
+		SubMenuArray[sCount++] = new SubMenuNodeinfo("å®½å¸¦è®¾ç½®");
 }
 	
 if(vPageMap[2][2] == '1'){
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "°ó¶¨ÉèÖÃ", "/cgi-bin/net-binding.asp", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("°ó¶¨ÉèÖÃ");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "ç»‘å®šè®¾ç½®", "/cgi-bin/net-binding.asp", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("ç»‘å®šè®¾ç½®");
 }
 	
 if(vPageMap[2][3] == '1'){
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "LAN²àµØÖ·ÅäÖÃ", "/net-dhcp.html", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("LAN²àµØÖ·ÅäÖÃ");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "LANä¾§åœ°å€é…ç½®", "/net-dhcp.html", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("LANä¾§åœ°å€é…ç½®");
 }
 	
 if(vPageMap[2][4] == '1'){
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "WLANÅäÖÃ", "/cgi-bin/net-wlan.asp", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("WLANÅäÖÃ");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "WLANé…ç½®", "/cgi-bin/net-wlan.asp", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("WLANé…ç½®");
 }
 	
 if(vPageMap[2][5] == '1')
 {
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "Ô¶³Ì¹ÜÀí", "/cgi-bin/net-tr069.asp", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("Ô¶³Ì¹ÜÀí");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "è¿œç¨‹ç®¡ç†", "/cgi-bin/net-tr069.asp", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("è¿œç¨‹ç®¡ç†");
 }
 
 if(vPageMap[2][9] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "ÊÖ»úÁ¬½Ó¹ÜÀí", "/cgi-bin/net-phoneapp.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "æ‰‹æœºè¿æ¥ç®¡ç†", "/cgi-bin/net-phoneapp.asp", "");
 if(vPageMap[2][6] == '1'){
 	MenuArray[iCount++] = new MenuNodeConstruction(2, "QoS", "/cgi-bin/net-qos.asp", "");
 	SubMenuArray[sCount++] = new SubMenuNodeinfo("QoS");
 }
 
 if(vPageMap[2][7] == '1'){
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "Ê±¼ä¹ÜÀí", "/cgi-bin/net-time.asp", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("Ê±¼ä¹ÜÀí");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "æ—¶é—´ç®¡ç†", "/cgi-bin/net-time.asp", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("æ—¶é—´ç®¡ç†");
 }
 	
 if(vPageMap[2][8] == '1'){
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "Â·ÓÉÅäÖÃ", "/cgi-bin/net-routeset.asp", "");
-	SubMenuArray[sCount++] = new SubMenuNodeinfo("Â·ÓÉÅäÖÃ");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "è·¯ç”±é…ç½®", "/cgi-bin/net-routeset.asp", "");
+	SubMenuArray[sCount++] = new SubMenuNodeinfo("è·¯ç”±é…ç½®");
 }
 
 //Sec->3
 
 if(vPageMap[3][0] == '1'){
 	if(vPageMap[3][1] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "°²È«", "account.html", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "å®‰å…¨", "account.html", "");
 	else if(vPageMap[3][2] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "°²È«", "/cgi-bin/sec-firewall.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "å®‰å…¨", "/cgi-bin/sec-firewall.asp", "");
 	else if(vPageMap[3][3] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "°²È«", "/cgi-bin/sec-macfilter.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "å®‰å…¨", "/cgi-bin/sec-macfilter.asp", "");
 	else if(vPageMap[3][4] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "°²È«", "/cgi-bin/sec-portfilter.asp", "");				
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "å®‰å…¨", "/cgi-bin/sec-portfilter.asp", "");				
 }
 
 if(vPageMap[3][1] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "¹ãÓòÍø·ÃÎÊÉèÖÃ", "account.html", "");
-//	MenuArray[iCount++] = new MenuNodeConstruction(2, "¹ãÓòÍø·ÃÎÊÉèÖÃ", "/cgi-bin/sec-urlfilter.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "å¹¿åŸŸç½‘è®¿é—®è®¾ç½®", "account.html", "");
+//	MenuArray[iCount++] = new MenuNodeConstruction(2, "å¹¿åŸŸç½‘è®¿é—®è®¾ç½®", "/cgi-bin/sec-urlfilter.asp", "");
 if(vPageMap[3][2] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "·À»ğÇ½", "/cgi-bin/sec-firewall.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "é˜²ç«å¢™", "/cgi-bin/sec-firewall.asp", "");
 if(vPageMap[3][3] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "MAC¹ıÂË", "content.html", "");
-//	MenuArray[iCount++] = new MenuNodeConstruction(2, "MAC¹ıÂË", "/cgi-bin/sec-macfilter.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "MACè¿‡æ»¤", "content.html", "");
+//	MenuArray[iCount++] = new MenuNodeConstruction(2, "MACè¿‡æ»¤", "/cgi-bin/sec-macfilter.asp", "");
 if(vPageMap[3][4] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "¶Ë¿Ú¹ıÂË", "account.html", "");
-//MenuArray[iCount++] = new MenuNodeConstruction(2, "¶Ë¿Ú¹ıÂË", "/cgi-bin/sec-portfilter.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "ç«¯å£è¿‡æ»¤", "account.html", "");
+//MenuArray[iCount++] = new MenuNodeConstruction(2, "ç«¯å£è¿‡æ»¤", "/cgi-bin/sec-portfilter.asp", "");
 //App->4
 
 if(vPageMap[4][0] == '1'){
 	if(vPageMap[4][1] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "Ó¦ÓÃ", "/cgi-bin/app-ddns.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "åº”ç”¨", "/cgi-bin/app-ddns.asp", "");
 	else if(vPageMap[4][2] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "Ó¦ÓÃ", "/cgi-bin/app-natset.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "åº”ç”¨", "/cgi-bin/app-natset.asp", "");
 	else if(vPageMap[4][3] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "Ó¦ÓÃ", "/cgi-bin/app-upnp.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "åº”ç”¨", "/cgi-bin/app-upnp.asp", "");
 	else if(vPageMap[4][4] == '1')
 		if(VoipType == 'H.248')
-			MenuArray[iCount++] = new MenuNodeConstruction(1, "Ó¦ÓÃ", "/cgi-bin/app-VoIP248.asp", "");
+			MenuArray[iCount++] = new MenuNodeConstruction(1, "åº”ç”¨", "/cgi-bin/app-VoIP248.asp", "");
 		else
-			MenuArray[iCount++] = new MenuNodeConstruction(1, "Ó¦ÓÃ", "/cgi-bin/app-VoIP.asp", "");
+			MenuArray[iCount++] = new MenuNodeConstruction(1, "åº”ç”¨", "/cgi-bin/app-VoIP.asp", "");
 	else if(vPageMap[4][5] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "Ó¦ÓÃ", "/cgi-bin/app-igmpset.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "åº”ç”¨", "/cgi-bin/app-igmpset.asp", "");
 	else if(vPageMap[4][6] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "Ó¦ÓÃ", "/cgi-bin/app-daily.asp", "");						
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "åº”ç”¨", "/cgi-bin/app-daily.asp", "");						
 }
 
 if(vPageMap[4][1] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "DDNSÅäÖÃ", "/cgi-bin/app-ddns.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "DDNSé…ç½®", "/cgi-bin/app-ddns.asp", "");
 if(vPageMap[4][2] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "¸ß¼¶NATÅäÖÃ", "/cgi-bin/app-natset.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "é«˜çº§NATé…ç½®", "/cgi-bin/app-natset.asp", "");
 if(vPageMap[4][3] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "UPNPÅäÖÃ", "/cgi-bin/app-upnp.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "UPNPé…ç½®", "/cgi-bin/app-upnp.asp", "");
 if(vPageMap[4][4] == '1')
 	if(VoipType == 'H.248')
-		MenuArray[iCount++] = new MenuNodeConstruction(2, "¿í´øµç»°ÉèÖÃ", "/cgi-bin/app-VoIP248.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(2, "å®½å¸¦ç”µè¯è®¾ç½®", "/cgi-bin/app-VoIP248.asp", "");
 	else
-		MenuArray[iCount++] = new MenuNodeConstruction(2, "¿í´øµç»°ÉèÖÃ", "/cgi-bin/app-VoIP.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(2, "å®½å¸¦ç”µè¯è®¾ç½®", "/cgi-bin/app-VoIP.asp", "");
 if(vPageMap[4][5] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "IGMP/MLDÉèÖÃ", "/cgi-bin/app-igmpset.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "IGMP/MLDè®¾ç½®", "/cgi-bin/app-igmpset.asp", "");
 if(vPageMap[4][6] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "ÈÕ³£Ó¦ÓÃ", "/cgi-bin/app-daily.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "æ—¥å¸¸åº”ç”¨", "/cgi-bin/app-daily.asp", "");
 //Mag->5
 
 if(vPageMap[5][0] == '1'){
 	if(vPageMap[5][1] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "¹ÜÀí", "/cgi-bin/mag-account.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç®¡ç†", "/cgi-bin/mag-account.asp", "");
 	else if(vPageMap[5][2] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "¹ÜÀí", "/cgi-bin/mag-reset.asp", "");
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç®¡ç†", "/cgi-bin/mag-reset.asp", "");
 	else if(vPageMap[5][3] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "¹ÜÀí", "/cgi-bin/mag-syslogmanage.asp", "");		
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç®¡ç†", "/cgi-bin/mag-syslogmanage.asp", "");		
 	else if(vPageMap[5][4] == '1')
-		MenuArray[iCount++] = new MenuNodeConstruction(1, "¹ÜÀí", "/cgi-bin/mag-diagnose.asp", "");		
+		MenuArray[iCount++] = new MenuNodeConstruction(1, "ç®¡ç†", "/cgi-bin/mag-diagnose.asp", "");		
 }
 
 if(vPageMap[5][1] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "ÓÃ»§¹ÜÀí", "/cgi-bin/mag-account.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "ç”¨æˆ·ç®¡ç†", "/cgi-bin/mag-account.asp", "");
 if(vPageMap[5][2] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "Éè±¸¹ÜÀí", "/cgi-bin/mag-reset.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "è®¾å¤‡ç®¡ç†", "/cgi-bin/mag-reset.asp", "");
 if(vPageMap[5][3] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "ÈÕÖ¾ÎÄ¼ş¹ÜÀí", "/cgi-bin/mag-syslogmanage.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "æ—¥å¿—æ–‡ä»¶ç®¡ç†", "/cgi-bin/mag-syslogmanage.asp", "");
 if(vPageMap[5][4] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "Î¬»¤", "/cgi-bin/mag-diagnose.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "ç»´æŠ¤", "/cgi-bin/mag-diagnose.asp", "");
 //Diag->6
 if(vPageMap[6][0] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(1, "Õï¶Ï", "/cgi-bin/diag-quickdiagnose.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(1, "è¯Šæ–­", "/cgi-bin/diag-quickdiagnose.asp", "");
 //if(vPageMap[6][1] == '1')
-//	MenuArray[iCount++] = new MenuNodeConstruction(2, "ÍøÂçÕï¶Ï", "/cgi-bin/diag-quickdiagnose.asp", "");
+//	MenuArray[iCount++] = new MenuNodeConstruction(2, "ç½‘ç»œè¯Šæ–­", "/cgi-bin/diag-quickdiagnose.asp", "");
 //Help->7
 if(vPageMap[7][0] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(1, "°ïÖú", "/cgi-bin/help.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(1, "å¸®åŠ©", "/cgi-bin/help.asp", "");
 if(vPageMap[7][1] == '1')
-	MenuArray[iCount++] = new MenuNodeConstruction(2, "Ê¹ÓÃ°ïÖú", "/cgi-bin/help.asp", "");
+	MenuArray[iCount++] = new MenuNodeConstruction(2, "ä½¿ç”¨å¸®åŠ©", "/cgi-bin/help.asp", "");
 
 MenuArray[iCount++] = new MenuNodeConstruction(0, "", "", "");
 SubMenuArray[sCount++] = new SubMenuNodeinfo("");
@@ -339,12 +339,12 @@ function MenuNodeConstruction(Level, Text, Link, Target)
     this.Link = Link;
     this.Target = Target;
 }
-/*Éú³É²Ëµ¥*/
+/*ç”Ÿæˆèœå•*/
 function MakeMainMenu(L1_menu_name, L2_menu_name)
 {
 	MakeMenu_L2(L2_menu_name, MakeMenu_L1(L1_menu_name));
 }
-/*Ò»¼¶²Ëµ¥*/
+/*ä¸€çº§èœå•*/
 var Code;
 var Code1;
 function MakeMenu_L1(Menu_Text)
@@ -361,7 +361,7 @@ function MakeMenu_L1(Menu_Text)
 			}
 			else
 			{
-				Menu_L2_Start = iCount + 1;//»ñµÃµ±Ç°Ñ¡ÖĞµÄÃû³Æ
+				Menu_L2_Start = iCount + 1;//è·å¾—å½“å‰é€‰ä¸­çš„åç§°
 				Code1 += '<li><img src="/img/selected_button.jpg"></li>';
 			}
 		}
@@ -405,9 +405,9 @@ function LoadPage(strIndex)
 			$("#ifm_content").html(html);
 		}  
 	});
-//	$("#iframe_content").attr("src",MenuArray[index].Link);//Ë¢ĞÂÒ³Ãæ
+//	$("#iframe_content").attr("src",MenuArray[index].Link);//åˆ·æ–°é¡µé¢
 }
-/*¶ş¼¶²Ëµ¥*/
+/*äºŒçº§èœå•*/
 var Code2;
 function MakeMenu_L2(Menu_Text, Start)
 {
